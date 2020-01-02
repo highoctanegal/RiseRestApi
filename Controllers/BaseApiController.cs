@@ -55,7 +55,8 @@ namespace RiseRestApi.Controllers
             _context.Add(model);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAssessment", new { model.Id }, model);
+            //return CreatedAtAction("GetAssessment", new { model.Id }, model);
+            return new JsonResult(model);
         }
 
         public async Task<ActionResult<IModel>> Delete(int id)

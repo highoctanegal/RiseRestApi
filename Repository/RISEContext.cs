@@ -14,16 +14,19 @@ namespace RiseRestApi.Repository
         {
         }
 
+        public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Assessment> Assessment { get; set; }
         public virtual DbSet<AssessmentResponse> AssessmentResponse { get; set; }
         public virtual DbSet<AssessmentStatus> AssessmentStatus { get; set; }
-        public virtual DbSet<Business> Business { get; set; }
+        public virtual DbSet<Coach> Coach { get; set; }
         public virtual DbSet<InterventionType> InterventionType { get; set; }
         public virtual DbSet<Note> Note { get; set; }
         public virtual DbSet<Organization> Organization { get; set; }
         public virtual DbSet<Person> Person { get; set; }
+        public virtual DbSet<PersonRole> PersonRole { get; set; }
         public virtual DbSet<Question> Question { get; set; }
         public virtual DbSet<Rating> Rating { get; set; }
+        public virtual DbSet<RiseProgram> Program { get; set; }
         public virtual DbSet<SkillSet> SkillSet { get; set; }
         public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyQuestion> SurveyQuestion { get; set; }
@@ -38,6 +41,11 @@ namespace RiseRestApi.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Address>(entity =>
+            {
+
+            });
+            
             modelBuilder.Entity<Assessment>(entity =>
             {
                 entity.HasIndex(e => e.AssessingPersonId)
@@ -135,14 +143,6 @@ namespace RiseRestApi.Repository
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<Business>(entity =>
-            {
-                entity.Property(e => e.BusinessName)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-            });
-
             modelBuilder.Entity<InterventionType>(entity =>
             {
                 entity.ToTable("InterventionType", "system_type");
@@ -188,6 +188,12 @@ namespace RiseRestApi.Repository
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.Admin)
+                    .WithMany(p => p.Organizations)
+                    .HasForeignKey(d => d.AdminPersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Organization_AdminPerson");
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -210,27 +216,64 @@ namespace RiseRestApi.Repository
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.CurrentBusiness)
-                    .WithMany(p => p.Person)
-                    .HasForeignKey(d => d.CurrentBusinessId)
-                    .HasConstraintName("FK_Person_Business");
+                entity.HasOne(p => p.Address);
+
+                entity.HasOne(p => p.CurrentOrganization);
             });
 
-            //modelBuilder.Entity<Models.Program>(entity =>
-            //{
-            //    entity.Property(e => e.ActiveDate).HasColumnType("datetime");
+            modelBuilder.Entity<PersonProgram>(entity =>
+            {
+                entity.Property(e => e.PersonId)
+                    .IsRequired();
+                entity.Property(e => e.ProgramId)
+                    .IsRequired();
+                entity.HasOne(d => d.Person)
+                    .WithMany(p => p.PersonPrograms)
+                    .HasForeignKey(d => d.PersonProgramId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PersonProgram_Person");
+                entity.HasOne(d => d.Program)
+                    .WithMany(p => p.PersonPrograms)
+                    .HasForeignKey(d => d.PersonProgramId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PersonProgram_Program");
+            });
 
-            //    entity.Property(e => e.ProgramName)
-            //        .IsRequired()
-            //        .HasMaxLength(50)
-            //        .IsUnicode(false);
+            modelBuilder.Entity<PersonRole>(entity =>
+            {
+                entity.Property(e => e.PersonId)
+                    .IsRequired();
+                entity.Property(e => e.RoleId)
+                    .IsRequired();
+                entity.HasOne(d => d.Person)
+                    .WithMany(p => p.PersonRoles)
+                    .HasForeignKey(d => d.PersonRoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PersonRole_Person");
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.PersonRoles)
+                    .HasForeignKey(d => d.PersonRoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PersonRole_Role");
+            });
 
-            //    entity.HasOne(d => d.Organization)
-            //        .WithMany(p => p.Program)
-            //        .HasForeignKey(d => d.OrganizationId)
-            //        .OnDelete(DeleteBehavior.ClientSetNull)
-            //        .HasConstraintName("FK_Program_Organization");
-            //});
+            modelBuilder.Entity<RiseProgram>(entity =>
+            {
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ProgramName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.Organization)
+                    .WithMany(p => p.Programs)
+                    .HasForeignKey(d => d.OrganizationId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Program_Organization");
+            });
 
             modelBuilder.Entity<Question>(entity =>
             {
@@ -271,7 +314,9 @@ namespace RiseRestApi.Repository
 
             modelBuilder.Entity<Survey>(entity =>
             {
-                entity.Property(e => e.ActiveDate).HasColumnType("datetime");
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.SurveyName)
                     .IsRequired()
@@ -308,7 +353,7 @@ namespace RiseRestApi.Repository
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestion_Survey");
             });
-
+            
             OnModelCreatingPartial(modelBuilder);
         }
 
