@@ -21,15 +21,19 @@ namespace RiseRestApi.Repository
         public virtual DbSet<Coach> Coach { get; set; }
         public virtual DbSet<InterventionType> InterventionType { get; set; }
         public virtual DbSet<Note> Note { get; set; }
-        public virtual DbSet<Organization> Organization { get; set; }
         public virtual DbSet<Person> Person { get; set; }
-        public virtual DbSet<PersonRole> PersonRole { get; set; }
+        public virtual DbSet<PersonProgram> PersonPrograms { get; set; }
         public virtual DbSet<Question> Question { get; set; }
         public virtual DbSet<Rating> Rating { get; set; }
         public virtual DbSet<RiseProgram> Program { get; set; }
+        public virtual DbSet<School> School { get; set; }
         public virtual DbSet<SkillSet> SkillSet { get; set; }
         public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyQuestion> SurveyQuestion { get; set; }
+
+        public virtual DbSet<PersonGrid> PersonGrid { get; set; }
+        public virtual DbSet<RiseProgramGrid> ProgramGrid { get; set; }
+        public virtual DbSet<SchoolGrid> SchoolGrid { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -45,27 +49,32 @@ namespace RiseRestApi.Repository
             {
 
             });
-            
+
+            modelBuilder.Entity<PersonGrid>(entity =>
+            {
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<RiseProgramGrid>(entity =>
+            {
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<SchoolGrid>(entity =>
+            {
+                entity.HasNoKey();
+            });
+
             modelBuilder.Entity<Assessment>(entity =>
             {
-                entity.HasIndex(e => e.AssessingPersonId)
-                    .HasName("IX_Assessment_AssessingPerson");
-
-                entity.HasIndex(e => e.CoachPersonId)
-                    .HasName("IX_Assessment_CoachPerson");
-
-                entity.HasIndex(e => e.NoteId)
-                    .HasName("IX_Assessment_Note");
-
-                entity.HasIndex(e => e.RegardingPersonId)
-                    .HasName("IX_Assessment_RegardingPerson");
+                entity.HasIndex(e => e.PersonId)
+                    .HasName("IX_Assessment_Person");
 
                 entity.Property(e => e.LastUpdateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.ReviewDate).HasColumnType("datetime");
-
                 entity.Property(e => e.SubmitDate).HasColumnType("datetime");
 
+                /*
                 entity.HasOne(d => d.AssessingPerson)
                     .WithMany(p => p.AssessmentAssessingPerson)
                     .HasForeignKey(d => d.AssessingPersonId)
@@ -100,6 +109,7 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.SurveyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Assessment_Survey");
+                */
             });
 
             modelBuilder.Entity<AssessmentResponse>(entity =>
@@ -107,12 +117,7 @@ namespace RiseRestApi.Repository
                 entity.HasIndex(e => e.AssessmentId)
                     .HasName("IX_AssessmentResponse_Assessment");
 
-                entity.HasIndex(e => e.NoteId)
-                    .HasName("IX_AssessmentResponse_Note");
-
-                entity.HasIndex(e => e.RatingId)
-                    .HasName("IX_AssessmentResponse_Rating");
-
+                /*
                 entity.HasOne(d => d.Assessment)
                     .WithMany(p => p.AssessmentResponse)
                     .HasForeignKey(d => d.AssessmentId)
@@ -129,6 +134,7 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.RatingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AssessmentResponse_QuestionRating");
+                 */
             });
 
             modelBuilder.Entity<AssessmentStatus>(entity =>
@@ -169,6 +175,7 @@ namespace RiseRestApi.Repository
                     .IsRequired()
                     .IsUnicode(false);
 
+                /*
                 entity.HasOne(d => d.AuthorPerson)
                     .WithMany(p => p.NoteAuthorPerson)
                     .HasForeignKey(d => d.AuthorPersonId)
@@ -180,20 +187,7 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.ReferencePersonId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Note_ReferencePerson");
-            });
-
-            modelBuilder.Entity<Organization>(entity =>
-            {
-                entity.Property(e => e.OrganizationName)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.Organizations)
-                    .HasForeignKey(d => d.AdminPersonId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Organization_AdminPerson");
+                */
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -218,15 +212,24 @@ namespace RiseRestApi.Repository
 
                 entity.HasOne(p => p.Address);
 
-                entity.HasOne(p => p.CurrentOrganization);
+                entity.HasOne(d => d.School)
+                    .WithMany(d => d.Students)
+                    .HasForeignKey(d => d.SchoolId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Person_School");
+
+                entity.HasOne(p => p.Role);
             });
 
             modelBuilder.Entity<PersonProgram>(entity =>
             {
                 entity.Property(e => e.PersonId)
                     .IsRequired();
+
                 entity.Property(e => e.ProgramId)
                     .IsRequired();
+
+                /*
                 entity.HasOne(d => d.Person)
                     .WithMany(p => p.PersonPrograms)
                     .HasForeignKey(d => d.PersonProgramId)
@@ -237,24 +240,7 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.PersonProgramId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_PersonProgram_Program");
-            });
-
-            modelBuilder.Entity<PersonRole>(entity =>
-            {
-                entity.Property(e => e.PersonId)
-                    .IsRequired();
-                entity.Property(e => e.RoleId)
-                    .IsRequired();
-                entity.HasOne(d => d.Person)
-                    .WithMany(p => p.PersonRoles)
-                    .HasForeignKey(d => d.PersonRoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PersonRole_Person");
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.PersonRoles)
-                    .HasForeignKey(d => d.PersonRoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PersonRole_Role");
+                 */
             });
 
             modelBuilder.Entity<RiseProgram>(entity =>
@@ -268,11 +254,13 @@ namespace RiseRestApi.Repository
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.HasOne(d => d.Organization)
+                /*
+                entity.HasOne(d => d.School)
                     .WithMany(p => p.Programs)
-                    .HasForeignKey(d => d.OrganizationId)
+                    .HasForeignKey(d => d.SchoolId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Program_Organization");
+                    .HasConstraintName("FK_Program_School");
+                 */
             });
 
             modelBuilder.Entity<Question>(entity =>
@@ -297,11 +285,29 @@ namespace RiseRestApi.Repository
                     .HasMaxLength(1000)
                     .IsUnicode(false);
 
+                /*
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.Rating)
                     .HasForeignKey(d => d.QuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Rating_Question");
+                */
+            });
+
+            modelBuilder.Entity<School>(entity =>
+            {
+                entity.Property(e => e.SchoolName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(p => p.Admin);
+
+                //entity.HasOne(d => d.Admin)
+                //    .WithMany(p => p.Schools)
+                //    .HasForeignKey(d => d.AdminPersonId)
+                //    .OnDelete(DeleteBehavior.ClientSetNull)
+                //    .HasConstraintName("FK_School_AdminPerson");
             });
 
             modelBuilder.Entity<SkillSet>(entity =>
@@ -335,6 +341,7 @@ namespace RiseRestApi.Repository
                 entity.HasIndex(e => e.SkillSetId)
                     .HasName("IX_SurveyQuestion_SkillSet");
 
+                /*
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.SurveyQuestion)
                     .HasForeignKey(d => d.QuestionId)
@@ -352,8 +359,21 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.SurveyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_SurveyQuestion_Survey");
+                */
             });
-            
+
+            modelBuilder.Entity<Voice>(entity =>
+            {
+                entity.ToTable("Voice", "system_type");
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.Text)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+            });
+
             OnModelCreatingPartial(modelBuilder);
         }
 

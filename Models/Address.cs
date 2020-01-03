@@ -15,7 +15,7 @@ namespace RiseRestApi.Models
 
 
         public Person Person { get; set; }
-        public Organization Organization { get; set; }
+        public School School { get; set; }
 
         public int Id => AddressId;
 

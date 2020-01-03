@@ -10,8 +10,6 @@ namespace RiseRestApi.Models
         public string RoleName { get; set; }
         public bool IsRemoved { get; set; }
 
-        public virtual ICollection<PersonRole> PersonRoles { get; set; }
-
         public int Id => RoleId;
     }
 }
