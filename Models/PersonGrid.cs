@@ -7,6 +7,7 @@ namespace RiseRestApi.Models
         public int? SchoolId { get; set; }
         public int? ProgramId { get; set; }
         public int RoleId { get; set; }
+        public int? OverallLevel { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string SchoolName { get; set; }

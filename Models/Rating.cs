@@ -12,7 +12,7 @@ namespace RiseRestApi.Models
 
         [Key]
         public int RatingId { get; set; }
-        public string RatingValue { get; set; }
+        public int Score { get; set; }
         public string RatingText { get; set; }
         public int QuestionId { get; set; }
         public int RatingOrder { get; set; }

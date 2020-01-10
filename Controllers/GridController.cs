@@ -20,10 +20,16 @@ namespace RiseRestApi.Controllers
             _context = context;
         }
 
-        [HttpGet("users")]
+        [HttpGet("persons")]
         public async Task<ActionResult<IEnumerable<PersonGrid>>> GetPersons()
         {
-            return await _context.PersonGrid.FromSqlRaw("EXEC spUserGrid").ToListAsync();
+            return await _context.PersonGrid.FromSqlRaw("EXEC spPersonGrid").ToListAsync();
+        }
+
+        [HttpGet("persons/{coachId}")]
+        public async Task<ActionResult<IEnumerable<PersonGrid>>> GetPersonsByCoach(int coachId)
+        {
+            return await _context.PersonGrid.FromSqlRaw($"EXEC spPersonGridByCoach {coachId}").ToListAsync();
         }
 
         [HttpGet("programs")]
@@ -36,6 +42,12 @@ namespace RiseRestApi.Controllers
         public async Task<ActionResult<IEnumerable<SchoolGrid>>> GetSchools()
         {
             return await _context.SchoolGrid.FromSqlRaw("EXEC spSchoolGrid").ToListAsync();
+        }
+
+        [HttpGet("assessments/{personId}")]
+        public async Task<ActionResult<IEnumerable<AssessmentGrid>>> GetAssessmentByPerson(int personId)
+        {
+            return await _context.AssessmentGrid.FromSqlRaw($"EXEC spAssessmentGrid {personId}").ToListAsync();
         }
     }
 }

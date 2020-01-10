@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace RiseRestApi.Models
@@ -16,5 +17,6 @@ namespace RiseRestApi.Models
 
         public Person AdminPerson { get; set; }
         public School School { get; set; }
+        public ICollection<Person> Students { get; set; }
     }
 }

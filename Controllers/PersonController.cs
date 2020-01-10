@@ -28,6 +28,24 @@ namespace RiseRestApi.Controllers
             return await Get(id);
         }
 
+        [HttpGet("detail/{id}")]
+        public async Task<ActionResult<PersonDetail>> GetPersonDetail(int id)
+        {
+            if (!Exists(id))
+            {
+                return NotFound();
+            }
+
+            var model = await _context.PersonDetail.FromSqlRaw($"EXEC dbo.spPersonDetail {id}").ToListAsync();
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return model.First();
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPerson(int id, Person person)
         {

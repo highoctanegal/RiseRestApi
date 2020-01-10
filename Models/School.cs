@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RiseRestApi.Models
 {
-    public partial class School : IModel
+    public partial class School : SchoolBase, IModel
     {
         public School()
         {
@@ -13,12 +13,7 @@ namespace RiseRestApi.Models
         
         [Key]
         public int SchoolId { get; set; }
-        public int AddressId { get; set; }
-        public int AdminPersonId { get; set; }
-        public string SchoolName { get; set; }
-        public string BlobImageName { get; set; }
-        public bool IsRemoved { get; set; }
-
+        
         public Person Admin { get; set; }
         public Address Address { get; set; }
 
