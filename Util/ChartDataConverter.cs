@@ -5,7 +5,7 @@ using static RiseRestApi.Models.ChartData;
 
 namespace RiseRestApi.Util
 {
-    public class ChartDataConverter 
+    public class ChartDataConverter
     {
         public ChartData ChartData { get; private set; }
 
@@ -14,6 +14,8 @@ namespace RiseRestApi.Util
             ChartData = new ChartData();
 
         }
+
+        #region PersonAssessmentChart
         public ChartDataConverter(ICollection<PersonAssessmentChart> skillSetLevels) : this()
         {
             FillNames(skillSetLevels);
@@ -38,19 +40,22 @@ namespace RiseRestApi.Util
                 ChartData.SeriesData.Add(series);
             }
         }
+        #endregion
 
-        public ChartDataConverter(ICollection<CoachSkillSetPercentageChart> skillSetPercentages) : this()
+        #region SkillSetPercentageChart
+        public ChartDataConverter(ICollection<SkillSetPercentageChart> skillSetPercentages) : this()
         {
             FillNames(skillSetPercentages);
             FillData(skillSetPercentages);
         }
-        public void FillNames(ICollection<CoachSkillSetPercentageChart> skillSetPercentages)
+
+        public void FillNames(ICollection<SkillSetPercentageChart> skillSetPercentages)
         {
             ChartData.CollectionNames = skillSetPercentages.OrderBy(s => s.SkillSetId)
-                .Select(s => s.SkillSetName).Distinct().ToList();
+                .Select(s => s.SkillSetName.Replace(" ", "\n")).Distinct().ToList();
         }
 
-        public void FillData(ICollection<CoachSkillSetPercentageChart> skillSetPercentages)
+        public void FillData(ICollection<SkillSetPercentageChart> skillSetPercentages)
         {
             for (int level = 5; level > 0; level--)
             {
@@ -63,5 +68,26 @@ namespace RiseRestApi.Util
                 });
             }
         }
+        #endregion
+
+        #region CoachFirstLastLevelChart
+        public ChartDataConverter(ICollection<CoachFirstLatestScoreChart> personLevels) : this()
+        {
+            FillNames();
+            FillData(personLevels);
+        }
+
+        public void FillNames()
+        {
+            ChartData.CollectionNames = new List<string> { "First Assessment Score", "Latest Assessment Score" };
+        }
+
+        public void FillData(ICollection<CoachFirstLatestScoreChart> personLevels)
+        {
+            ChartData.SeriesData = personLevels.Select(s => new Series { 
+                Name = s.PersonId.ToString(), 
+                Data = new object[] { s.FirstScore, s.LatestScore } }).ToList();
+        }
+        #endregion
     }
 }

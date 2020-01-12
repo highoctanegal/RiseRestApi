@@ -8,6 +8,8 @@ namespace RiseRestApi.Models
         public int? ProgramId { get; set; }
         public int RoleId { get; set; }
         public int? OverallLevel { get; set; }
+        public int? FirstScore { get; set; }
+        public int? LatestScore { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string SchoolName { get; set; }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-//using Microsoft.Azure.Storage;
-//using Microsoft.Azure.Storage.Auth;
-//using Microsoft.Azure.Storage.Blob;
+using Microsoft.Azure.Storage;
+using Microsoft.Azure.Storage.Auth;
+using Microsoft.Azure.Storage.Blob;
 using Microsoft.AspNetCore.Cors;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace RiseRestApi.Controllers
 {
@@ -11,19 +13,34 @@ namespace RiseRestApi.Controllers
     [ApiController]
     public class BlobController : ControllerBase
     {
-        public BlobController()
+        [HttpPost("[Action]")]
+        async public Task<IActionResult> SaveFile(IFormFile files)
         {
-            //var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
-            //var cloudStorageAccount = new CloudStorageAccount(storageCredentials, true);
-            //var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
+            var cloudStorageAccount = new CloudStorageAccount(storageCredentials, true);
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
-            //var container = cloudBlobClient.GetContainerReference("images");
-            //await container.CreateIfNotExistsAsync();
-            //var newBlob = container.GetBlockBlobReference("myfile");
-            //await newBlob.UploadFromFileAsync(@"path\myfile.png");
-            //var newBlob = container.GetBlockBlobReference("myfile");
-            //await newBlob.DownloadToFileAsync("path/myfile.png", FileMode.Create);
+            var container = cloudBlobClient.GetContainerReference("images");
+            await container.CreateIfNotExistsAsync();
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(files.FileName);
 
+            using (var fileStream = files.OpenReadStream())
+            {
+                await blockBlob.UploadFromStreamAsync(fileStream);
+            }
+
+            return new JsonResult(new
+            {
+                name = blockBlob.Name,
+                uri = blockBlob.Uri,
+                size = blockBlob.Properties.Length
+            });
+        }
+
+        [HttpPost("[Action]")]
+        async public Task<IActionResult> RemoveFile()
+        {
+            return new JsonResult(true);
         }
     }
 }

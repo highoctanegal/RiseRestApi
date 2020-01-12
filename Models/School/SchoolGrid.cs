@@ -1,6 +1,6 @@
 ﻿namespace RiseRestApi.Models
 {
-    public partial class SchoolGrid
+    public partial class SchoolGrid 
     {
         public int SchoolId { get; set; }
         public string SchoolName { get; set; }

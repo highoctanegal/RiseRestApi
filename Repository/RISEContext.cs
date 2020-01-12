@@ -16,27 +16,29 @@ namespace RiseRestApi.Repository
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Assessment> Assessment { get; set; }
+        public virtual DbSet<AssessmentGrid> AssessmentGrid { get; set; }
         public virtual DbSet<AssessmentResponse> AssessmentResponse { get; set; }
         public virtual DbSet<Coach> Coach { get; set; }
         public virtual DbSet<Note> Note { get; set; }
         public virtual DbSet<Person> Person { get; set; }
-        public virtual DbSet<PersonProgram> PersonPrograms { get; set; }
+        public virtual DbSet<PersonDetail> PersonDetail { get; set; }
+        public virtual DbSet<PersonGrid> PersonGrid { get; set; }
         public virtual DbSet<Question> Question { get; set; }
         public virtual DbSet<Rating> Rating { get; set; }
+        public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<RiseProgram> Program { get; set; }
+        public virtual DbSet<RiseProgramDetail> ProgramDetail { get; set; }
+        public virtual DbSet<RiseProgramGrid> ProgramGrid { get; set; }
         public virtual DbSet<School> School { get; set; }
         public virtual DbSet<SkillSet> SkillSet { get; set; }
+        public virtual DbSet<SchoolDetail> SchoolDetail { get; set; }
+        public virtual DbSet<SchoolGrid> SchoolGrid { get; set; }
         public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyQuestion> SurveyQuestion { get; set; }
 
-        public virtual DbSet<PersonGrid> PersonGrid { get; set; }
-        public virtual DbSet<RiseProgramGrid> ProgramGrid { get; set; }
-        public virtual DbSet<SchoolGrid> SchoolGrid { get; set; }
-        public virtual DbSet<PersonDetail> PersonDetail { get; set; }
-        public virtual DbSet<SchoolDetail> SchoolDetail { get; set; }
-        public virtual DbSet<AssessmentGrid> AssessmentGrid { get; set; }
         public virtual DbSet<PersonAssessmentChart> PersonAssessmentChart { get; set; }
-        public virtual DbSet<CoachSkillSetPercentageChart> CoachSkillSetPercentageChart { get; set; }
+        public virtual DbSet<SkillSetPercentageChart> SkillSetPercentageChart { get; set; }
+        public virtual DbSet<CoachFirstLatestScoreChart> CoachCoachFirstLatestScoreChart { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -48,51 +50,80 @@ namespace RiseRestApi.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Address>(entity =>
-            {
+            OnModelCreatingAssessment(modelBuilder);
+            OnModelCreatingChart(modelBuilder);
+            OnModelCreatingPerson(modelBuilder);
+            OnModelCreatingProgram(modelBuilder);
+            OnModelCreatingSchool(modelBuilder);
+            OnModelCreatingSurvey(modelBuilder);
+            OnModelCreatingChart(modelBuilder);
 
+            modelBuilder.Entity<Address>();
+
+            modelBuilder.Entity<Note>(entity =>
+            {
+                entity.HasIndex(e => e.AuthorPersonId)
+                    .HasName("IX_Note_AuthorPerson");
+
+                entity.HasIndex(e => e.ReferencePersonId)
+                    .HasName("IX_Note_ReferencePerson");
+
+                entity.Property(e => e.NoteDate).HasColumnType("datetime");
+
+                entity.Property(e => e.NoteText)
+                    .IsRequired()
+                    .IsUnicode(false);
+
+                /*
+                entity.HasOne(d => d.AuthorPerson)
+                    .WithMany(p => p.NoteAuthorPerson)
+                    .HasForeignKey(d => d.AuthorPersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Note_AuthorPerson");
+
+                entity.HasOne(d => d.ReferencePerson)
+                    .WithMany(p => p.NoteReferencePerson)
+                    .HasForeignKey(d => d.ReferencePersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Note_ReferencePerson");
+                */
             });
 
-            modelBuilder.Entity<PersonGrid>(entity =>
+            modelBuilder.Entity<SkillSet>(entity =>
             {
-                entity.HasNoKey();
+                entity.Property(e => e.SkillSetName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
             });
 
-            modelBuilder.Entity<RiseProgramGrid>(entity =>
+            modelBuilder.Entity<Voice>(entity =>
             {
-                entity.HasNoKey();
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.Text)
+                    .IsRequired()
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Role>(entity =>
+            {
+                entity.Property(e => e.RoleName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            OnModelCreatingPartial(modelBuilder);
+        }
+
+        protected void OnModelCreatingAssessment(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<AssessmentGrid>(entity =>
             {
                 entity.HasNoKey();
             });
-
-            modelBuilder.Entity<SchoolGrid>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<PersonDetail>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<SchoolDetail>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<PersonAssessmentChart>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<CoachSkillSetPercentageChart>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
             modelBuilder.Entity<Assessment>(entity =>
             {
                 entity.HasIndex(e => e.PersonId)
@@ -131,13 +162,13 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.RegardingPersonId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Assessment_RegardingPerson");
+                */
 
                 entity.HasOne(d => d.Survey)
                     .WithMany(p => p.Assessment)
                     .HasForeignKey(d => d.SurveyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Assessment_Survey");
-                */
             });
 
             modelBuilder.Entity<AssessmentResponse>(entity =>
@@ -156,42 +187,47 @@ namespace RiseRestApi.Repository
                     .WithMany(p => p.AssessmentResponse)
                     .HasForeignKey(d => d.NoteId)
                     .HasConstraintName("FK_AssessmentResponse_Note");
+                 */
 
                 entity.HasOne(d => d.Rating)
                     .WithMany(p => p.AssessmentResponse)
                     .HasForeignKey(d => d.RatingId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AssessmentResponse_QuestionRating");
-                 */
             });
 
-            modelBuilder.Entity<Note>(entity =>
+
+        }
+
+        protected void OnModelCreatingChart(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PersonAssessmentChart>(entity =>
             {
-                entity.HasIndex(e => e.AuthorPersonId)
-                    .HasName("IX_Note_AuthorPerson");
+                entity.HasNoKey();
+            });
 
-                entity.HasIndex(e => e.ReferencePersonId)
-                    .HasName("IX_Note_ReferencePerson");
+            modelBuilder.Entity<CoachFirstLatestScoreChart>(entity =>
+            {
+                entity.HasNoKey();
+            });
 
-                entity.Property(e => e.NoteDate).HasColumnType("datetime");
+            modelBuilder.Entity<SkillSetPercentageChart>(entity =>
+            {
+                entity.HasNoKey();
+            });
 
-                entity.Property(e => e.NoteText)
-                    .IsRequired()
-                    .IsUnicode(false);
+        }
 
-                /*
-                entity.HasOne(d => d.AuthorPerson)
-                    .WithMany(p => p.NoteAuthorPerson)
-                    .HasForeignKey(d => d.AuthorPersonId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Note_AuthorPerson");
+        protected void OnModelCreatingPerson(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PersonDetail>(entity =>
+            {
+                entity.HasNoKey();
+            });
 
-                entity.HasOne(d => d.ReferencePerson)
-                    .WithMany(p => p.NoteReferencePerson)
-                    .HasForeignKey(d => d.ReferencePersonId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Note_ReferencePerson");
-                */
+            modelBuilder.Entity<PersonGrid>(entity =>
+            {
+                entity.HasNoKey();
             });
 
             modelBuilder.Entity<Person>(entity =>
@@ -233,37 +269,23 @@ namespace RiseRestApi.Repository
                 entity.HasOne(p => p.Coach)
                     .WithMany(d => d.Pupils)
                     .HasForeignKey(d => d.CoachId);
+            });
+        }
 
+        protected void OnModelCreatingProgram(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<RiseProgramGrid>(entity =>
+            {
+                entity.HasNoKey();
             });
 
-            modelBuilder.Entity<PersonProgram>(entity =>
+            modelBuilder.Entity<RiseProgramDetail>(entity =>
             {
-                entity.Property(e => e.PersonId)
-                    .IsRequired();
-
-                entity.Property(e => e.ProgramId)
-                    .IsRequired();
-
-                /*
-                entity.HasOne(d => d.Person)
-                    .WithMany(p => p.PersonPrograms)
-                    .HasForeignKey(d => d.PersonProgramId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PersonProgram_Person");
-                entity.HasOne(d => d.Program)
-                    .WithMany(p => p.PersonPrograms)
-                    .HasForeignKey(d => d.PersonProgramId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PersonProgram_Program");
-                 */
+                entity.HasNoKey();
             });
 
             modelBuilder.Entity<RiseProgram>(entity =>
             {
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
-
                 entity.Property(e => e.ProgramName)
                     .IsRequired()
                     .HasMaxLength(50)
@@ -275,7 +297,49 @@ namespace RiseRestApi.Repository
                 //    .OnDelete(DeleteBehavior.ClientSetNull)
                 //    .HasConstraintName("FK_Program_School");
             });
+        }
 
+        protected void OnModelCreatingSchool(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SchoolGrid>(entity =>
+            {
+                entity.HasNoKey();
+            });
+
+
+            modelBuilder.Entity<SchoolDetail>(entity =>
+            {
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<School>(entity =>
+            {
+                entity.Property(e => e.SchoolName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Website)
+                    .HasMaxLength(1000)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.MainPhone)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                //entity.HasOne(p => p.Admin);
+
+                entity.HasOne(d => d.Admin)
+                    .WithMany(p => p.Schools)
+                    .HasForeignKey(k => k.AdminPersonId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_School_AdminPerson");
+            });
+
+        }
+
+        protected void OnModelCreatingSurvey(ModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<Question>(entity =>
             {
                 entity.Property(e => e.QuestionDescription).IsUnicode(false);
@@ -301,38 +365,7 @@ namespace RiseRestApi.Repository
                     .HasForeignKey(d => d.QuestionId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Rating_Question");
-                
-            });
 
-            modelBuilder.Entity<School>(entity =>
-            {
-                entity.Property(e => e.SchoolName)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.Website)
-                    .HasMaxLength(1000)
-                    .IsUnicode(false);
-
-                entity.Property(e => e.MainPhone)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
-
-                //entity.HasOne(p => p.Admin);
-
-                //entity.HasOne(d => d.Admin)
-                //    .WithOne(p => p.School)
-                //    .OnDelete(DeleteBehavior.ClientSetNull)
-                //    .HasConstraintName("FK_School_AdminPerson");
-            });
-
-            modelBuilder.Entity<SkillSet>(entity =>
-            {
-                entity.Property(e => e.SkillSetName)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
             });
 
             modelBuilder.Entity<Survey>(entity =>
@@ -377,17 +410,6 @@ namespace RiseRestApi.Repository
                     .HasConstraintName("FK_SurveyQuestion_Survey");
             });
 
-            modelBuilder.Entity<Voice>(entity =>
-            {
-                entity.Property(e => e.Description).IsUnicode(false);
-
-                entity.Property(e => e.Text)
-                    .IsRequired()
-                    .HasMaxLength(1000)
-                    .IsUnicode(false);
-            });
-
-            OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

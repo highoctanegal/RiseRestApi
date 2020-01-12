@@ -1,6 +1,6 @@
 ﻿namespace RiseRestApi.Models
 {
-    public class CoachSkillSetPercentageChart
+    public class SkillSetPercentageChart
     {
         public int SkillSetId { get; set; }
         public string SkillSetName { get; set; }
