@@ -18,7 +18,6 @@ namespace RiseRestApi.Repository
         public virtual DbSet<Assessment> Assessment { get; set; }
         public virtual DbSet<AssessmentGrid> AssessmentGrid { get; set; }
         public virtual DbSet<AssessmentResponse> AssessmentResponse { get; set; }
-        public virtual DbSet<Coach> Coach { get; set; }
         public virtual DbSet<Note> Note { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<PersonDetail> PersonDetail { get; set; }
@@ -29,10 +28,10 @@ namespace RiseRestApi.Repository
         public virtual DbSet<RiseProgram> Program { get; set; }
         public virtual DbSet<RiseProgramDetail> ProgramDetail { get; set; }
         public virtual DbSet<RiseProgramGrid> ProgramGrid { get; set; }
-        public virtual DbSet<School> School { get; set; }
+        public virtual DbSet<Organization> Organization { get; set; }
         public virtual DbSet<SkillSet> SkillSet { get; set; }
-        public virtual DbSet<SchoolDetail> SchoolDetail { get; set; }
-        public virtual DbSet<SchoolGrid> SchoolGrid { get; set; }
+        public virtual DbSet<OrganizationDetail> OrganizationDetail { get; set; }
+        public virtual DbSet<OrganizationGrid> OrganizationGrid { get; set; }
         public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyQuestion> SurveyQuestion { get; set; }
 
@@ -54,7 +53,7 @@ namespace RiseRestApi.Repository
             OnModelCreatingChart(modelBuilder);
             OnModelCreatingPerson(modelBuilder);
             OnModelCreatingProgram(modelBuilder);
-            OnModelCreatingSchool(modelBuilder);
+            OnModelCreatingOrganization(modelBuilder);
             OnModelCreatingSurvey(modelBuilder);
             OnModelCreatingChart(modelBuilder);
 
@@ -232,6 +231,8 @@ namespace RiseRestApi.Repository
 
             modelBuilder.Entity<Person>(entity =>
             {
+                entity.HasKey(e => e.PersonId);
+
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(100)
@@ -252,11 +253,11 @@ namespace RiseRestApi.Repository
 
                 entity.HasOne(p => p.Address);
 
-                entity.HasOne(d => d.School)
+                entity.HasOne(d => d.Organization)
                     .WithMany(d => d.Students)
-                    .HasForeignKey(d => d.SchoolId)
+                    .HasForeignKey(d => d.OrganizationId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Person_School");
+                    .HasConstraintName("FK_Person_Organization");
 
                 entity.HasOne(p => p.Role);
 
@@ -268,7 +269,7 @@ namespace RiseRestApi.Repository
 
                 entity.HasOne(p => p.Coach)
                     .WithMany(d => d.Pupils)
-                    .HasForeignKey(d => d.CoachId);
+                    .HasForeignKey(d => d.CoachPersonId);
             });
         }
 
@@ -291,30 +292,30 @@ namespace RiseRestApi.Repository
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                //entity.HasOne(d => d.School)
+                //entity.HasOne(d => d.Organization)
                 //    .WithMany(p => p.Programs)
-                //    .HasForeignKey(d => d.SchoolId)
+                //    .HasForeignKey(d => d.OrganizationId)
                 //    .OnDelete(DeleteBehavior.ClientSetNull)
-                //    .HasConstraintName("FK_Program_School");
+                //    .HasConstraintName("FK_Program_Organization");
             });
         }
 
-        protected void OnModelCreatingSchool(ModelBuilder modelBuilder)
+        protected void OnModelCreatingOrganization(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SchoolGrid>(entity =>
+            modelBuilder.Entity<OrganizationGrid>(entity =>
             {
                 entity.HasNoKey();
             });
 
 
-            modelBuilder.Entity<SchoolDetail>(entity =>
+            modelBuilder.Entity<OrganizationDetail>(entity =>
             {
                 entity.HasNoKey();
             });
 
-            modelBuilder.Entity<School>(entity =>
+            modelBuilder.Entity<Organization>(entity =>
             {
-                entity.Property(e => e.SchoolName)
+                entity.Property(e => e.OrganizationName)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -330,10 +331,10 @@ namespace RiseRestApi.Repository
                 //entity.HasOne(p => p.Admin);
 
                 entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.Schools)
+                    .WithMany(p => p.Organizations)
                     .HasForeignKey(k => k.AdminPersonId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_School_AdminPerson");
+                    .HasConstraintName("FK_Organization_AdminPerson");
             });
 
         }

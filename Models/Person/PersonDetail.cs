@@ -3,7 +3,7 @@
     public class PersonDetail : PersonBase, IModel
     {
         public int PersonId { get; set; }
-        public string SchoolName { get; set; }
+        public string OrganizationName { get; set; }
         public string ProgramName { get; set; }
         public string RoleName { get; set; }
         public string CoachFirstName { get; set; }

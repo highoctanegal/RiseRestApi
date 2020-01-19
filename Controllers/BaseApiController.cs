@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiseRestApi.Repository;
-using RiseRestApi.Models;
 using System.Threading.Tasks;
+using RiseRestApi.Models;
 
 namespace RiseRestApi.Controllers
 {
-    public abstract class BaseApiController : ControllerBase
+    public abstract class BaseApiController<U> : ControllerBase
+        where U: IModel
     {
         protected readonly RiseContext _context;
 
@@ -15,7 +16,7 @@ namespace RiseRestApi.Controllers
             _context = context;
         }
 
-        public async Task<ActionResult<IModel>> Get(int id)
+        protected async Task<ActionResult<U>> Get(int id)
         {
             var model = await FindAsync(id);
 
@@ -27,7 +28,7 @@ namespace RiseRestApi.Controllers
             return new JsonResult(model);
         }
 
-        public async Task<IActionResult> Put(int id, IModel model)
+        protected async Task<IActionResult> Put(int id, U model)
         {
             _context.Entry(model).State = EntityState.Modified;
 
@@ -50,16 +51,15 @@ namespace RiseRestApi.Controllers
             return NoContent();
         }
 
-        public async Task<ActionResult<IModel>> Post(IModel model)
+        protected async Task<ActionResult<U>> Post(U model)
         {
             _context.Add(model);
             await _context.SaveChangesAsync();
 
-            //return CreatedAtAction("GetAssessment", new { model.Id }, model);
             return new JsonResult(model);
         }
 
-        public async Task<ActionResult<IModel>> Delete(int id)
+        protected async Task<ActionResult<U>> Delete(int id)
         {
             var model = await FindAsync(id);
 
@@ -74,9 +74,9 @@ namespace RiseRestApi.Controllers
             return new JsonResult(model);
         }
 
-        public abstract bool Exists(int id);
+        protected abstract bool Exists(int id);
 
-        public abstract Task<IModel> FindAsync(int id);
+        protected abstract Task<U> FindAsync(int id);
 
     }
 }

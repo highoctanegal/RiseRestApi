@@ -12,18 +12,18 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class ProgramController : BaseApiController
+    public class ProgramController : BaseApiController<RiseProgram>
     {
         public ProgramController(RiseContext context) : base(context) { }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RiseProgram>>> GetProgram()
         {
-            return await _context.Program.ToListAsync();
+            return await _context.Program.Where(p => !p.IsRemoved).ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetProgram(int id)
+        public async Task<ActionResult<RiseProgram>> GetProgram(int id)
         {
             return await Get(id);
         }
@@ -47,32 +47,39 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRiseProgram(int id, RiseProgram program)
+        public async Task<IActionResult> PutProgram(int id, RiseProgram program)
         {
             return await Put(id, program);
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostRiseProgram(RiseProgram program)
+        public async Task<ActionResult<RiseProgram>> PostProgram(RiseProgram program)
         {
             return await Post(program);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteRiseProgram(int id)
+        public async Task<ActionResult<RiseProgram>> DeleteProgram(int id)
         {
-            return await Delete(id);
+            var program = _context.Program.Where(p => p.ProgramId == id).FirstOrDefault();
+            if (program == null)
+            {
+                return new NotFoundResult();
+            }
+            program.IsRemoved = true;
+            await Put(id, program);
+            return new JsonResult(program);
 
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.Program.Any(e => e.ProgramId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<RiseProgram> FindAsync(int id)
         {
-            return await _context.Program.FindAsync(id) as IModel;
+            return await _context.Program.FindAsync(id) as RiseProgram;
         }
     }
 }

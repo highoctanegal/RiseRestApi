@@ -26,16 +26,16 @@ namespace RiseRestApi.Controllers
             return await _context.PersonGrid.FromSqlRaw("EXEC spPersonGrid").ToListAsync();
         }
 
-        [HttpGet("personsbycoach/{coachId}")]
-        public async Task<ActionResult<IEnumerable<PersonGrid>>> GetPersonsByCoach(int coachId)
+        [HttpGet("personsbycoach/{coachPersonId}")]
+        public async Task<ActionResult<IEnumerable<PersonGrid>>> GetPersonsByCoach(int coachPersonId)
         {
-            return await _context.PersonGrid.FromSqlRaw($"EXEC spPersonGridByCoach {coachId}").ToListAsync();
+            return await _context.PersonGrid.FromSqlRaw($"EXEC spPersonGridByCoach {coachPersonId}").ToListAsync();
         }
 
-        [HttpGet("personsbyschool/{schoolId}")]
-        public async Task<ActionResult<IEnumerable<PersonGrid>>> GetPersonsBySchool(int schoolId)
+        [HttpGet("personsbyorganization/{OrganizationId}")]
+        public async Task<ActionResult<IEnumerable<PersonGrid>>> GetPersonsByOrganization(int OrganizationId)
         {
-            return await _context.PersonGrid.FromSqlRaw($"EXEC spPersonGridBySchool {schoolId}").ToListAsync();
+            return await _context.PersonGrid.FromSqlRaw($"EXEC spPersonGridByOrganization {OrganizationId}").ToListAsync();
         }
 
         [HttpGet("personsbyprogram/{programId}")]
@@ -50,10 +50,10 @@ namespace RiseRestApi.Controllers
             return await _context.ProgramGrid.FromSqlRaw("EXEC spProgramGrid").ToListAsync();
         }
 
-        [HttpGet("schools")]
-        public async Task<ActionResult<IEnumerable<SchoolGrid>>> GetSchools()
+        [HttpGet("organizations")]
+        public async Task<ActionResult<IEnumerable<OrganizationGrid>>> GetOrganizations()
         {
-            return await _context.SchoolGrid.FromSqlRaw("EXEC spSchoolGrid").ToListAsync();
+            return await _context.OrganizationGrid.FromSqlRaw("EXEC spOrganizationGrid").ToListAsync();
         }
 
         [HttpGet("assessments/{personId}")]

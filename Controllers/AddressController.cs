@@ -12,31 +12,31 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class AddressController : BaseApiController
+    public class AddressController : BaseApiController<Address>
     {
         public AddressController(RiseContext context) : base(context) { }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Address>>> GetAddress()
         {
-            return await _context.Address.ToListAsync();
+            return await _context.Address.Where(a => !a.IsRemoved).ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetAddress(int id)
+        public async Task<ActionResult<Address>> GetAddress(int id)
         {
             return await Get(id);
         }
 
         [HttpGet("person/{id}")]
-        public async Task<ActionResult<IModel>> GetPersonAddress(int id)
+        public async Task<ActionResult<Address>> GetPersonAddress(int id)
         {
             var person = await _context.Person.FindAsync(id);
             if (person == null)
             {
                 return NotFound();
             }
-            var model = await _context.Address.FindAsync(person.AddressId) as IModel;
+            var model = await _context.Address.FindAsync(person.AddressId) as Address;
 
             if (model == null)
             {
@@ -46,15 +46,15 @@ namespace RiseRestApi.Controllers
             return new JsonResult(model);
         }
 
-        [HttpGet("school/{id}")]
-        public async Task<ActionResult<IModel>> GetSchoolAddress(int id)
+        [HttpGet("Organization/{id}")]
+        public async Task<ActionResult<Address>> GetOrganizationAddress(int id)
         {
-            var school = await _context.School.FindAsync(id);
-            if (school == null)
+            var Organization = await _context.Organization.FindAsync(id);
+            if (Organization == null)
             {
                 return NotFound();
             }
-            var model = await _context.Address.FindAsync(school.AddressId) as IModel;
+            var model = await _context.Address.FindAsync(Organization.AddressId) as Address;
 
             if (model == null)
             {
@@ -65,32 +65,38 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAddress(int id, Address assessment)
+        public async Task<IActionResult> PutAddress(int id, Address address)
         {
-            return await Put(id, assessment);
+            return await Put(id, address);
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostAddress(Address assessment)
+        public async Task<ActionResult<Address>> PostAddress(Address address)
         {
-            return await Post(assessment);
+            return await Post(address);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteAddress(int id)
+        public async Task<ActionResult<Address>> DeleteAddress(int id)
         {
-            return await Delete(id);
-
+            var address = _context.Address.Where(a => a.AddressId == id).FirstOrDefault();
+            if (address == null)
+            {
+                return new NotFoundResult();
+            }
+            address.IsRemoved = true;
+            await Put(id, address);
+            return new JsonResult(address);
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.Address.Any(e => e.AddressId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<Address> FindAsync(int id)
         {
-            return await _context.Address.FindAsync(id) as IModel;
+            return await _context.Address.FindAsync(id) as Address;
         }
     }
 }

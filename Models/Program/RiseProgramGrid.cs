@@ -4,7 +4,7 @@ namespace RiseRestApi.Models
     public class RiseProgramGrid : RiseProgramBase
     {
         public int ProgramId { get; set; }
-        public string SchoolName { get; set; }
+        public string OrganizationName { get; set; }
         public int EntrepreneurCount { get; set; }
         public int CoachCount { get; set; }
         public string AdminFirstName { get; set; }

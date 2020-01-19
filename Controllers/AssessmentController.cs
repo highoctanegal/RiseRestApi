@@ -12,7 +12,7 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class AssessmentController : BaseApiController
+    public class AssessmentController : BaseApiController<Assessment>
     {
         public AssessmentController(RiseContext context) : base(context) { }
 
@@ -23,7 +23,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetAssessment(int id)
+        public async Task<ActionResult<Assessment>> GetAssessment(int id)
         {
             return await Get(id);
         }
@@ -35,26 +35,26 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostAssessment(Assessment assessment)
+        public async Task<ActionResult<Assessment>> PostAssessment(Assessment assessment)
         {
             return await Post(assessment);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteAssessment(int id)
+        public async Task<ActionResult<Assessment>> DeleteAssessment(int id)
         {
             return await Delete(id);
 
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.Assessment.Any(e => e.AssessmentId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<Assessment> FindAsync(int id)
         {
-            return await _context.Assessment.FindAsync(id) as IModel;
+            return await _context.Assessment.FindAsync(id) as Assessment;
         }
     }
 }

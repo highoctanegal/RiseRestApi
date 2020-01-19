@@ -1,9 +1,9 @@
 ﻿
 namespace RiseRestApi.Models
 {
-    public class SchoolDetail : SchoolBase, IModel
+    public class OrganizationDetail : OrganizationBase, IModel
     {
-        public int SchoolId { get; set; }
+        public int OrganizationId { get; set; }
         public string AdminFirstName { get; set; }
         public string AdminLastName { get; set; }
         public string AdminFullName => $"{AdminFirstName} {AdminLastName}";
@@ -14,6 +14,6 @@ namespace RiseRestApi.Models
         public int ProgramCount { get; set; }
         public int AssessmentCount { get; set; }
 
-        public int Id => SchoolId;
+        public int Id => OrganizationId;
     }
 }

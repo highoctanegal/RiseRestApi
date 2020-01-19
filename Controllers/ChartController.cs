@@ -35,26 +35,26 @@ namespace RiseRestApi.Controllers
             return chartDataConverter.ChartData;
         }
 
-        [HttpGet("coachskillsetpercentage/{coachId}")]
-        public async Task<ActionResult<ChartData>> GetCoachSkillSetPercentageChart(int coachId)
+        [HttpGet("coachskillsetpercentage/{coachPersonId}")]
+        public async Task<ActionResult<ChartData>> GetCoachSkillSetPercentageChart(int coachPersonId)
         {
-            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spCoachSkillSetPercentageChart {coachId}").ToListAsync();
+            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spCoachSkillSetPercentageChart {coachPersonId}").ToListAsync();
             var chartDataConverter = new ChartDataConverter(skillSetPercentages);
             return chartDataConverter.ChartData;
         }
 
-        [HttpGet("coachfirstlatestscore/{coachId}")]
-        public async Task<ActionResult<ChartData>> GetCoachFirstLastScoreChart(int coachId)
+        [HttpGet("coachfirstlatestscore/{coachPersonId}")]
+        public async Task<ActionResult<ChartData>> GetCoachFirstLastScoreChart(int coachPersonId)
         {
-            var firstLastLevels = await _context.CoachCoachFirstLatestScoreChart.FromSqlRaw($"EXEC spCoachFirstLatestScoreChart {coachId}").ToListAsync();
+            var firstLastLevels = await _context.CoachCoachFirstLatestScoreChart.FromSqlRaw($"EXEC spCoachFirstLatestScoreChart {coachPersonId}").ToListAsync();
             var chartDataConverter = new ChartDataConverter(firstLastLevels);
             return chartDataConverter.ChartData;
         }
 
-        [HttpGet("schoolskillsetpercentage/{schoolId}")]
-        public async Task<ActionResult<ChartData>> GetSchoolSkillSetPercentageChart(int schoolId)
+        [HttpGet("organizationskillsetpercentage/{organizationId}")]
+        public async Task<ActionResult<ChartData>> GetOrganizationSkillSetPercentageChart(int organizationId)
         {
-            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spSchoolSkillSetPercentageChart {schoolId}").ToListAsync();
+            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spOrganizationSkillSetPercentageChart {organizationId}").ToListAsync();
             var chartDataConverter = new ChartDataConverter(skillSetPercentages);
             return chartDataConverter.ChartData;
         }

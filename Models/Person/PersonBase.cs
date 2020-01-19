@@ -3,9 +3,9 @@
     public class PersonBase
     {
         public int? AddressId { get; set; }
-        public int? SchoolId { get; set; }
+        public int? OrganizationId { get; set; }
         public int? ProgramId { get; set; }
-        public int? CoachId { get; set; }
+        public int? CoachPersonId { get; set; }
         public int RoleId { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

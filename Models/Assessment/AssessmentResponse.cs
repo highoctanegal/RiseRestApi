@@ -2,7 +2,7 @@
 
 namespace RiseRestApi.Models
 {
-    public partial class AssessmentResponse : IModel
+    public partial class AssessmentResponse
     {
         [Key]
         public int AssessmentResponseId { get; set; }

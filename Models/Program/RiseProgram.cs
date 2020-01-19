@@ -9,7 +9,7 @@ namespace RiseRestApi.Models
         public int ProgramId { get; set; }
         
         public Person AdminPerson { get; set; }
-        public School School { get; set; }
+        public Organization Organization { get; set; }
         public ICollection<Person> Students { get; set; }
 
         public int Id => ProgramId;

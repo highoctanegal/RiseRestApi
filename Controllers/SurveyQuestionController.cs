@@ -12,7 +12,7 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class SurveyQuestionController : BaseApiController
+    public class SurveyQuestionController : BaseApiController<SurveyQuestion>
     {
         public SurveyQuestionController(RiseContext context) : base(context) { }
 
@@ -23,7 +23,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetSurveyQuestion(int id)
+        public async Task<ActionResult<SurveyQuestion>> GetSurveyQuestion(int id)
         {
             return await Get(id);
         }
@@ -35,25 +35,25 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostSurveyQuestion(SurveyQuestion surveyQuestion)
+        public async Task<ActionResult<SurveyQuestion>> PostSurveyQuestion(SurveyQuestion surveyQuestion)
         {
             return await Post(surveyQuestion);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteSurveyQuestion(int id)
+        public async Task<ActionResult<SurveyQuestion>> DeleteSurveyQuestion(int id)
         {
             return await Delete(id);
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.SurveyQuestion.Any(e => e.SurveyQuestionId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<SurveyQuestion> FindAsync(int id)
         {
-            return await _context.SurveyQuestion.FindAsync(id) as IModel;
+            return await _context.SurveyQuestion.FindAsync(id) as SurveyQuestion;
         }
 
     }

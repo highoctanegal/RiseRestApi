@@ -12,7 +12,7 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class NoteController : BaseApiController
+    public class NoteController : BaseApiController<Note>
     {
         public NoteController(RiseContext context) : base(context) { }
 
@@ -23,7 +23,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetNote(int id)
+        public async Task<ActionResult<Note>> GetNote(int id)
         {
             return await Get(id);
         }
@@ -35,25 +35,25 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostNote(Note note)
+        public async Task<ActionResult<Note>> PostNote(Note note)
         {
             return await Post(note);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteNote(int id)
+        public async Task<ActionResult<Note>> DeleteNote(int id)
         {
             return await Delete(id);
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.Note.Any(e => e.NoteId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<Note> FindAsync(int id)
         {
-            return await _context.Note.FindAsync(id) as IModel;
+            return await _context.Note.FindAsync(id) as Note;
         }
     }
 }

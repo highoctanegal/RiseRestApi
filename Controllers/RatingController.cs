@@ -12,7 +12,7 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class RatingController : BaseApiController
+    public class RatingController : BaseApiController<Rating>
     {
         public RatingController(RiseContext context) : base(context) { }
 
@@ -23,7 +23,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetRating(int id)
+        public async Task<ActionResult<Rating>> GetRating(int id)
         {
             return await Get(id);
         }
@@ -35,25 +35,24 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostRating(Rating rating)
+        public async Task<ActionResult<Rating>> PostRating(Rating rating)
         {
             return await Post(rating);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteRating(int id)
+        public async Task<ActionResult<Rating>> DeleteRating(int id)
         {
             return await Delete(id);
         }
-
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.Rating.Any(e => e.RatingId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<Rating> FindAsync(int id)
         {
-            return await _context.Rating.FindAsync(id) as IModel;
+            return await _context.Rating.FindAsync(id) as Rating;
         }
     }
 }

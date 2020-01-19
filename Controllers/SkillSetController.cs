@@ -12,7 +12,7 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class SkillSetController : BaseApiController
+    public class SkillSetController : BaseApiController<SkillSet>
     {
         public SkillSetController(RiseContext context) : base(context) { }
 
@@ -23,7 +23,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetSkillSet(int id)
+        public async Task<ActionResult<SkillSet>> GetSkillSet(int id)
         {
             return await Get(id);
         }
@@ -35,25 +35,25 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostSkillSet(SkillSet skillSet)
+        public async Task<ActionResult<SkillSet>> PostSkillSet(SkillSet skillSet)
         {
             return await Post(skillSet);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteSkillSet(int id)
+        public async Task<ActionResult<SkillSet>> DeleteSkillSet(int id)
         {
             return await Delete(id);
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.SkillSet.Any(e => e.SkillSetId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<SkillSet> FindAsync(int id)
         {
-            return await _context.SkillSet.FindAsync(id) as IModel;
+            return await _context.SkillSet.FindAsync(id) as SkillSet;
         }
 
     }

@@ -12,10 +12,10 @@ namespace RiseRestApi.Controllers
     [EnableCors("AllowAll")]
     [Route("api/[controller]")]
     [ApiController]
-    public class QuestionController : BaseApiController
+    public class QuestionController : BaseApiController<Question>
     {
-        public QuestionController(RiseContext context) : base (context) { }
-               
+        public QuestionController(RiseContext context) : base(context) { }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Question>>> GetQuestion()
         {
@@ -23,7 +23,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IModel>> GetQuestion(int id)
+        public async Task<ActionResult<Question>> GetQuestion(int id)
         {
             return await Get(id);
         }
@@ -35,25 +35,25 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IModel>> PostQuestion(Question question)
+        public async Task<ActionResult<Question>> PostQuestion(Question question)
         {
             return await Post(question);
         }
-        
+
         [HttpDelete("{id}")]
-        public async Task<ActionResult<IModel>> DeleteQuestion(int id)
+        public async Task<ActionResult<Question>> DeleteQuestion(int id)
         {
             return await Delete(id);
         }
 
-        public override bool Exists(int id)
+        protected override bool Exists(int id)
         {
             return _context.Question.Any(e => e.QuestionId == id);
         }
 
-        public override async Task<IModel> FindAsync(int id)
+        protected override async Task<Question> FindAsync(int id)
         {
-            return await _context.Question.FindAsync(id) as IModel;
+            return await _context.Question.FindAsync(id) as Question;
         }
     }
 }

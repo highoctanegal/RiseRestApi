@@ -6,7 +6,7 @@ namespace RiseRestApi.Models
     {
         public string ProgramName { get; set; }
         public int AdminPersonId { get; set; }
-        public int SchoolId { get; set; }
+        public int OrganizationId { get; set; }
         public bool IsRemoved { get; set; }
     }
 }
