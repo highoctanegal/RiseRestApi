@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
+using System;
 
 namespace RiseRestApi.Controllers
 {
@@ -15,6 +16,19 @@ namespace RiseRestApi.Controllers
     public class PersonController : BaseApiController<Person>
     {
         public PersonController(RiseContext context) : base(context) { }
+
+        [HttpGet("access/{id}")]
+        public async Task<ActionResult<IEnumerable<AreaAccessDetail>>> GetAuthorization(int id)
+        {
+            var person = _context.Person.Where(p => p.PersonId == id && !p.IsRemoved).FirstOrDefault();
+            
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            return await _context.AreaAccessDetail.FromSqlRaw("EXEC dbo.spAreaAccessByPerson {0}", person.PersonId).ToListAsync();
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Person>>> GetPerson()
@@ -37,9 +51,9 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("organization/{organizationId}")]
-        public async Task<ActionResult<IEnumerable<Person>>> GetPersonByOrganization(int OrganizationId)
+        public async Task<ActionResult<IEnumerable<Person>>> GetPersonByOrganization(int organizationId)
         {
-            return await _context.Person.Where(p => p.OrganizationId == OrganizationId).ToListAsync();
+            return await _context.Person.Where(p => p.OrganizationId == organizationId).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -48,7 +62,7 @@ namespace RiseRestApi.Controllers
             return await Get(id);
         }
 
-        [HttpGet("detail/{id}")]
+        [HttpGet("{id}/detail")]
         public async Task<ActionResult<PersonDetail>> GetPersonDetail(int id)
         {
             if (!Exists(id))
@@ -56,13 +70,24 @@ namespace RiseRestApi.Controllers
                 return NotFound();
             }
 
-            var model = await _context.PersonDetail.FromSqlRaw($"EXEC dbo.spPersonDetail {id}").ToListAsync();
+            var model = await _context.PersonDetail.FromSqlRaw("EXEC dbo.spPersonDetail {0}", id)
+                .ToListAsync();
+            return model.First();
+        }
 
-            if (model == null)
+        [HttpGet("login/{email}")]
+        public async Task<ActionResult<PersonDetail>> Login(string email)
+        {
+            var person = _context.Person.Where(p => p.Email == email && !p.IsRemoved).FirstOrDefault();
+            if (person == null)
             {
                 return NotFound();
             }
-
+            person.LastLogin = DateTime.UtcNow;
+            _context.SaveChanges();
+            
+            var model = await _context.PersonDetail.FromSqlRaw("EXEC dbo.spPersonDetail {0}", person.PersonId)
+                .ToListAsync();
             return model.First();
         }
 
@@ -100,6 +125,5 @@ namespace RiseRestApi.Controllers
         {
             return await _context.Person.FindAsync(id) as Person;
         }
-
     }
 }

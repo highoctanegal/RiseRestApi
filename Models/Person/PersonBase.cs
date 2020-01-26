@@ -1,4 +1,6 @@
-﻿namespace RiseRestApi.Models
+﻿using System;
+
+namespace RiseRestApi.Models
 {
     public class PersonBase
     {
@@ -12,6 +14,7 @@
         public string FullName => $"{FirstName} {LastName}";
         public string Email { get; set; }
         public string Phone { get; set; }
+        public DateTime? LastLogin { get; set; }
         public string BusinessName { get; set; }
         public string BusinessWebsite { get; set; }
         public string BlobImageName { get; set; }

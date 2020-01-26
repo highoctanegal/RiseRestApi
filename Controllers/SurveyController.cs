@@ -28,6 +28,21 @@ namespace RiseRestApi.Controllers
             return await Get(id);
         }
 
+        [HttpGet("{surveyId}/sections")]
+        public async Task<ActionResult<IEnumerable<SkillSet>>> GetSurveySections(int surveyId)
+        {
+            return await _context.SurveyQuestion.Where(s => s.SurveyId == surveyId)
+                .Select(q => q.SkillSet).Distinct().ToListAsync();
+        }
+
+        [HttpGet("{surveyId}/{skillSetId}/questions")]
+        public async Task<ActionResult<IEnumerable<Question>>> GetSurveySectionQuestions(int surveyId, int skillSetId)
+        {
+            return await _context.SurveyQuestion.Where(s => s.SurveyId == surveyId && s.SkillSetId == skillSetId)
+                .OrderBy(s => s.QuestionOrder)
+                .Select(s => s.Question).ToListAsync();
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutSurvey(int id, Survey survey)
         {

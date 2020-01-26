@@ -30,7 +30,7 @@ namespace RiseRestApi.Controllers
         [HttpGet("personassessment/{personId}/{voiceId}")]
         public async Task<ActionResult<ChartData>> GetPersonAssessmentChart(int personId, int voiceId)
         {
-            var skillSetLevels = await _context.PersonAssessmentChart.FromSqlRaw($"EXEC spPersonAssessmentChart {personId}, {voiceId}").ToListAsync();
+            var skillSetLevels = await _context.PersonAssessmentChart.FromSqlRaw("EXEC spPersonAssessmentChart {0}, {1}", personId, voiceId).ToListAsync();
             var chartDataConverter = new ChartDataConverter(skillSetLevels);
             return chartDataConverter.ChartData;
         }
@@ -38,7 +38,7 @@ namespace RiseRestApi.Controllers
         [HttpGet("coachskillsetpercentage/{coachPersonId}")]
         public async Task<ActionResult<ChartData>> GetCoachSkillSetPercentageChart(int coachPersonId)
         {
-            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spCoachSkillSetPercentageChart {coachPersonId}").ToListAsync();
+            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw("EXEC spCoachSkillSetPercentageChart {0}", coachPersonId).ToListAsync();
             var chartDataConverter = new ChartDataConverter(skillSetPercentages);
             return chartDataConverter.ChartData;
         }
@@ -46,7 +46,7 @@ namespace RiseRestApi.Controllers
         [HttpGet("coachfirstlatestscore/{coachPersonId}")]
         public async Task<ActionResult<ChartData>> GetCoachFirstLastScoreChart(int coachPersonId)
         {
-            var firstLastLevels = await _context.CoachCoachFirstLatestScoreChart.FromSqlRaw($"EXEC spCoachFirstLatestScoreChart {coachPersonId}").ToListAsync();
+            var firstLastLevels = await _context.CoachCoachFirstLatestScoreChart.FromSqlRaw("EXEC spCoachFirstLatestScoreChart {0}", coachPersonId).ToListAsync();
             var chartDataConverter = new ChartDataConverter(firstLastLevels);
             return chartDataConverter.ChartData;
         }
@@ -54,7 +54,7 @@ namespace RiseRestApi.Controllers
         [HttpGet("organizationskillsetpercentage/{organizationId}")]
         public async Task<ActionResult<ChartData>> GetOrganizationSkillSetPercentageChart(int organizationId)
         {
-            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spOrganizationSkillSetPercentageChart {organizationId}").ToListAsync();
+            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw("EXEC spOrganizationSkillSetPercentageChart {0}", organizationId).ToListAsync();
             var chartDataConverter = new ChartDataConverter(skillSetPercentages);
             return chartDataConverter.ChartData;
         }
@@ -62,7 +62,7 @@ namespace RiseRestApi.Controllers
         [HttpGet("programskillsetpercentage/{programId}")]
         public async Task<ActionResult<ChartData>> GetProgramSkillSetPercentageChart(int programId)
         {
-            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw($"EXEC spProgramSkillSetPercentageChart {programId}").ToListAsync();
+            var skillSetPercentages = await _context.SkillSetPercentageChart.FromSqlRaw("EXEC spProgramSkillSetPercentageChart {0}", programId).ToListAsync();
             var chartDataConverter = new ChartDataConverter(skillSetPercentages);
             return chartDataConverter.ChartData;
         }

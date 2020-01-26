@@ -8,6 +8,6 @@ namespace RiseRestApi.Models
         public int? SkillSetLevel { get; set; }
         public int SkillSetId { get; set; }
         public string SkillSetName { get; set; }
-        public DateTime? SubmitDate { get; set; }
+        public DateTime? AssessmentDate { get; set; }
     }
 }

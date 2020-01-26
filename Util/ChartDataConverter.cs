@@ -24,7 +24,8 @@ namespace RiseRestApi.Util
 
         public void FillNames(ICollection<PersonAssessmentChart> skillSetLevels)
         {
-            ChartData.CollectionNames = skillSetLevels.OrderBy(o => o.SubmitDate).Select(s => s.SubmitDate?.ToString("MM/dd/yyyy")).Distinct().ToList();
+            ChartData.CollectionNames = skillSetLevels.OrderBy(o => o.AssessmentDate)
+                .Select(s => s.AssessmentDate?.ToString("MM/dd/yyyy")).Distinct().ToList();
         }
 
         public void FillData(ICollection<PersonAssessmentChart> skillSetLevels)
@@ -35,7 +36,8 @@ namespace RiseRestApi.Util
                 var series = new Series()
                 {
                     Name = skillSetLevels.FirstOrDefault(s => s.SkillSetId == skillSetId).SkillSetName,
-                    Data = skillSetLevels.Where(s => s.SkillSetId == skillSetId).OrderBy(o => o.SubmitDate).Select(s => (object)s.SkillSetLevel ?? 0).ToList()
+                    Data = skillSetLevels.Where(s => s.SkillSetId == skillSetId)
+                        .OrderBy(o => o.AssessmentDate).Select(s => (object)s.SkillSetLevel ?? 0).ToList()
                 };
                 ChartData.SeriesData.Add(series);
             }

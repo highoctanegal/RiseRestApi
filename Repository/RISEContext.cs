@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using RiseRestApi.Models;
+using System;
 
 namespace RiseRestApi.Repository
 {
@@ -18,6 +20,9 @@ namespace RiseRestApi.Repository
         public virtual DbSet<Assessment> Assessment { get; set; }
         public virtual DbSet<AssessmentGrid> AssessmentGrid { get; set; }
         public virtual DbSet<AssessmentResponse> AssessmentResponse { get; set; }
+        public virtual DbSet<AssessmentResponseDetail> AssessmentResponseDetail { get; set; }
+        public virtual DbSet<AreaAccess> AreaAccess { get; set; }
+        public virtual DbSet<AreaAccessDetail> AreaAccessDetail { get; set; }
         public virtual DbSet<Note> Note { get; set; }
         public virtual DbSet<Person> Person { get; set; }
         public virtual DbSet<PersonDetail> PersonDetail { get; set; }
@@ -34,6 +39,7 @@ namespace RiseRestApi.Repository
         public virtual DbSet<OrganizationGrid> OrganizationGrid { get; set; }
         public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyQuestion> SurveyQuestion { get; set; }
+        public virtual DbSet<Voice> Voice { get; set; }
 
         public virtual DbSet<PersonAssessmentChart> PersonAssessmentChart { get; set; }
         public virtual DbSet<SkillSetPercentageChart> SkillSetPercentageChart { get; set; }
@@ -41,9 +47,15 @@ namespace RiseRestApi.Repository
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables()
+                .Build();
+
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=rise-sql-server.database.windows.net;Initial Catalog=rise-sql-db;User Id=ken.knecht;Password=4ZJZ7AmsIY32");
+                optionsBuilder.UseSqlServer(configuration.GetConnectionString("RiseConnection"));
             }
         }
 
@@ -58,6 +70,10 @@ namespace RiseRestApi.Repository
             OnModelCreatingChart(modelBuilder);
 
             modelBuilder.Entity<Address>();
+            
+            modelBuilder.Entity<AreaAccess>();
+
+            modelBuilder.Entity<AreaAccessDetail>();
 
             modelBuilder.Entity<Note>(entity =>
             {
@@ -100,7 +116,7 @@ namespace RiseRestApi.Repository
             {
                 entity.Property(e => e.Description).IsUnicode(false);
 
-                entity.Property(e => e.Text)
+                entity.Property(e => e.VoiceName)
                     .IsRequired()
                     .HasMaxLength(1000)
                     .IsUnicode(false);
@@ -114,6 +130,14 @@ namespace RiseRestApi.Repository
                     .IsUnicode(false);
             });
 
+            modelBuilder.Entity<Voice>(entity =>
+            {
+                entity.Property(e => e.VoiceName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
+            });
+
             OnModelCreatingPartial(modelBuilder);
         }
 
@@ -123,14 +147,18 @@ namespace RiseRestApi.Repository
             {
                 entity.HasNoKey();
             });
+
+            modelBuilder.Entity<AssessmentResponseDetail>(entity =>
+            {
+                entity.HasNoKey();
+            });
+
             modelBuilder.Entity<Assessment>(entity =>
             {
                 entity.HasIndex(e => e.PersonId)
                     .HasName("IX_Assessment_Person");
 
-                entity.Property(e => e.LastUpdateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.SubmitDate).HasColumnType("datetime");
+                entity.Property(e => e.AssessmentDate).HasColumnType("datetime");
 
                 /*
                 entity.HasOne(d => d.AssessingPerson)
@@ -194,8 +222,6 @@ namespace RiseRestApi.Repository
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_AssessmentResponse_QuestionRating");
             });
-
-
         }
 
         protected void OnModelCreatingChart(ModelBuilder modelBuilder)
@@ -307,7 +333,6 @@ namespace RiseRestApi.Repository
                 entity.HasNoKey();
             });
 
-
             modelBuilder.Entity<OrganizationDetail>(entity =>
             {
                 entity.HasNoKey();
@@ -371,10 +396,6 @@ namespace RiseRestApi.Repository
 
             modelBuilder.Entity<Survey>(entity =>
             {
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
-
                 entity.Property(e => e.SurveyName)
                     .IsRequired()
                     .HasMaxLength(100)

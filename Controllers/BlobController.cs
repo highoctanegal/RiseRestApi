@@ -5,6 +5,7 @@ using Microsoft.Azure.Storage.Blob;
 using Microsoft.AspNetCore.Cors;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace RiseRestApi.Controllers
 {
@@ -13,10 +14,21 @@ namespace RiseRestApi.Controllers
     [ApiController]
     public class BlobController : ControllerBase
     {
+        private readonly IConfiguration _config;
+
+        public BlobController(IConfiguration config)
+        {
+            _config = config;
+        }
+
         [HttpPost("[Action]")]
         async public Task<IActionResult> SaveFile(IFormFile files)
         {
-            var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
+            var name = _config.GetValue(typeof(string), "BlobStorage:Name") as string;
+            var key = _config.GetValue(typeof(string), "BlobStorage:ServiceApiKey") as string;
+
+            //var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
+            var storageCredentials = new StorageCredentials(name, key);
             var cloudStorageAccount = new CloudStorageAccount(storageCredentials, true);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 
@@ -38,9 +50,17 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPost("[Action]")]
-        async public Task<IActionResult> RemoveFile()
+        async public Task<IActionResult> RemoveFile(string fileName)
         {
-            return new JsonResult(true);
+            var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
+            var cloudStorageAccount = new CloudStorageAccount(storageCredentials, true);
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+
+            var container = cloudBlobClient.GetContainerReference("images");
+            await container.CreateIfNotExistsAsync();
+            CloudBlockBlob blockBlob = container.GetBlockBlobReference(fileName);
+            await blockBlob.DeleteAsync();
+            return new JsonResult(new { success = true });
         }
     }
 }

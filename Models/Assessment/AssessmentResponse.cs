@@ -2,13 +2,10 @@
 
 namespace RiseRestApi.Models
 {
-    public partial class AssessmentResponse
+    public partial class AssessmentResponse : AssessmentResponseBase
     {
         [Key]
         public int AssessmentResponseId { get; set; }
-        public int AssessmentId { get; set; }
-        public int? NoteId { get; set; }
-        public int RatingId { get; set; }
 
         public virtual Assessment Assessment { get; set; }
         public virtual Note Note { get; set; }

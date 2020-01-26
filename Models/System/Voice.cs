@@ -6,7 +6,7 @@ namespace RiseRestApi.Models
     {
         [Key]
         public int VoiceId { get; set; }
-        public string Text { get; set; }
+        public string VoiceName { get; set; }
         public string Description { get; set; }
         public bool IsRemoved { get; set; }
     }

@@ -1,16 +1,23 @@
-﻿namespace RiseRestApi.Models
+﻿using System;
+
+namespace RiseRestApi.Models
 {
     public class AssessmentGrid : AssessmentBase
     {
         public int AssessmentId { get; set; }
-        public string VoiceText { get; set; }
+        public string VoiceName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string FullName => $"{FirstName} {LastName}";
+        public DateTime? NoteDate { get; set; }
         public string NoteText { get; set; }
-        public string AuthorPersonId { get; set; }
-        public string AuthorFirstName { get; set; }
-        public string AuthorLastName { get; set; }
-        public string AuthorFullName => $"{AuthorFirstName} {AuthorLastName}";
+        public string NoteAuthorPersonId { get; set; }
+        public string NoteAuthorFirstName { get; set; }
+        public string NoteAuthorLastName { get; set; }
+        public string NoteAuthorFullName => $"{NoteAuthorFirstName} {NoteAuthorLastName}";
         public string VoiceFirstName { get; set; }
         public string VoiceLastName { get; set; }
         public string VoiceFullName => $"{VoiceFirstName} {VoiceLastName}";
+        public string SurveyName { get; set; }
     }
 }

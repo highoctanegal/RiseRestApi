@@ -13,6 +13,7 @@
         public int? BusinessLevel { get; set; }
         public int? OrganizationProcessLevel { get; set; }
         public int? OverallLevel { get; set; }
+        public int AssessmentCount { get; set; }
 
         public string CoachFullName => $"{CoachFirstName} {CoachLastName}";
 

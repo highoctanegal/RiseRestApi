@@ -28,7 +28,7 @@ namespace RiseRestApi.Controllers
             return await Get(id);
         }
 
-        [HttpGet("detail/{id}")]
+        [HttpGet("{id}/detail")]
         public async Task<ActionResult<OrganizationDetail>> GetOrganizationDetail(int id)
         {
             if (!Exists(id))
@@ -36,7 +36,7 @@ namespace RiseRestApi.Controllers
                 return NotFound();
             }
 
-            var model = await _context.OrganizationDetail.FromSqlRaw($"EXEC dbo.spOrganizationDetail {id}").ToListAsync();
+            var model = await _context.OrganizationDetail.FromSqlRaw("EXEC dbo.spOrganizationDetail {0}", id).ToListAsync();
 
             if (model == null)
             {

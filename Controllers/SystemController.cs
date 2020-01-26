@@ -5,6 +5,7 @@ using RiseRestApi.Models;
 using RiseRestApi.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace RiseRestApi.Controllers
 {
@@ -23,7 +24,13 @@ namespace RiseRestApi.Controllers
         [HttpGet("roles")]
         public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
         {
-            return await _context.Role.ToListAsync();
+            return await _context.Role.Where(r => !r.IsRemoved).ToListAsync();
+        }
+
+        [HttpGet("voices")]
+        public async Task<ActionResult<IEnumerable<Voice>>> GetVoices()
+        {
+            return await _context.Voice.Where(v => !v.IsRemoved).ToListAsync();
         }
     }
 }

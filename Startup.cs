@@ -49,9 +49,15 @@ namespace RiseRestApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                configuration.AddUserSecrets<Startup>();
             }
 
             app.UseSwagger();

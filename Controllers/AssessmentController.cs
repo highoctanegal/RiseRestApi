@@ -28,6 +28,36 @@ namespace RiseRestApi.Controllers
             return await Get(id);
         }
 
+        [HttpGet("{id}/detail")]
+        public async Task<ActionResult<AssessmentGrid>> GetAssessmentDetail(int id)
+        {
+            if (!Exists(id))
+            {
+                return NotFound();
+            }
+
+            var model = await _context.AssessmentGrid.FromSqlRaw("EXEC spAssessmentGrid NULL,{0}", id).ToListAsync();
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+
+            return model.First();
+        }
+
+        [HttpGet("{id}/responsedetail")]
+        public async Task<ActionResult<IEnumerable<AssessmentResponseDetail>>> GetAssessmentResponseDetail(int id)
+        {
+            if (!Exists(id))
+            {
+                return NotFound();
+            }
+
+            return await _context.AssessmentResponseDetail.FromSqlRaw("EXEC spAssessmentResponseDetail {0}", id)
+                .ToListAsync();
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAssessment(int id, Assessment assessment)
         {

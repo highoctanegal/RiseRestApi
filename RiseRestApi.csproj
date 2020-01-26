@@ -7,6 +7,7 @@
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
+    <UserSecretsId>8a8e78f6-06eb-41df-8ba8-7cded19194a7</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
