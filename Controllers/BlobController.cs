@@ -27,8 +27,8 @@ namespace RiseRestApi.Controllers
             var name = _config.GetValue(typeof(string), "BlobStorage:Name") as string;
             var key = _config.GetValue(typeof(string), "BlobStorage:ServiceApiKey") as string;
 
-            //var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
-            var storageCredentials = new StorageCredentials(name, key);
+            var storageCredentials = new StorageCredentials("riseblob", "tjYEgCxKNtLqs49TDPDfHPeh4HG/0htvXtwAnvpPE1lPXNXOB+XF++GXc9Hbcz77O0GJ68KFa8AwXLg811FTog==");
+            //var storageCredentials = new StorageCredentials(name, key);
             var cloudStorageAccount = new CloudStorageAccount(storageCredentials, true);
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
 

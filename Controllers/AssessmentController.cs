@@ -29,14 +29,14 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpGet("{id}/detail")]
-        public async Task<ActionResult<AssessmentGrid>> GetAssessmentDetail(int id)
+        public async Task<ActionResult<AssessmentDetail>> GetDetail(int id)
         {
             if (!Exists(id))
             {
                 return NotFound();
             }
 
-            var model = await _context.AssessmentGrid.FromSqlRaw("EXEC spAssessmentGrid NULL,{0}", id).ToListAsync();
+            var model = await _context.AssessmentDetail.FromSqlRaw("EXEC spAssessmentDetail @AssessmentId={0}", id).ToListAsync();
 
             if (model == null)
             {
@@ -46,16 +46,26 @@ namespace RiseRestApi.Controllers
             return model.First();
         }
 
-        [HttpGet("{id}/responsedetail")]
-        public async Task<ActionResult<IEnumerable<AssessmentResponseDetail>>> GetAssessmentResponseDetail(int id)
+        [HttpGet("person/{personId}")]
+        public async Task<ActionResult<IEnumerable<AssessmentDetail>>> GetByPerson(int personId)
         {
-            if (!Exists(id))
-            {
-                return NotFound();
-            }
+            return await _context.AssessmentDetail.FromSqlRaw("EXEC spAssessmentDetail @PersonId={0}", personId).ToListAsync();
+        }
 
-            return await _context.AssessmentResponseDetail.FromSqlRaw("EXEC spAssessmentResponseDetail {0}", id)
+        [HttpGet("person/{personId}/draft/{voicePersonId}")]
+        public async Task<ActionResult<PersonAssessmentDetail>> GetDraft(int personId, int voicePersonId)
+        {
+            var list = await _context.PersonAssessmentDetail
+                .FromSqlRaw("EXEC spPersonAssessmentDraft @PersonId={0}, @VoicePersonId={1}", personId, voicePersonId)
                 .ToListAsync();
+
+            return list.FirstOrDefault();
+        }
+
+        [HttpGet("person/{personId}/detail")]
+        public async Task<ActionResult<IEnumerable<PersonAssessmentDetail>>> GetDetailByPerson(int personId)
+        {
+            return await _context.PersonAssessmentDetail.FromSqlRaw("EXEC spPersonAssessmentDetail {0}", personId).ToListAsync();
         }
 
         [HttpPut("{id}")]

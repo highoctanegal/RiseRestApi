@@ -87,7 +87,7 @@ namespace RiseRestApi.Util
         public void FillData(ICollection<CoachFirstLatestScoreChart> personLevels)
         {
             ChartData.SeriesData = personLevels.Select(s => new Series { 
-                Name = s.PersonId.ToString(), 
+                Name = s.FullName,
                 Data = new object[] { s.FirstScore, s.LatestScore } }).ToList();
         }
         #endregion

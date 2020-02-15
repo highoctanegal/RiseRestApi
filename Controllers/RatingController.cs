@@ -22,6 +22,26 @@ namespace RiseRestApi.Controllers
             return await _context.Rating.ToListAsync();
         }
 
+        [HttpGet("map")]
+        public async Task<ActionResult<IDictionary<int,IEnumerable<Rating>>>> GetRatingByQuestion()
+        {
+            var ratings = await _context.Rating.ToListAsync();
+            var ratingsMap = new Dictionary<int, IList<Rating>>();
+            foreach(var rating in ratings.OrderBy(r => r.QuestionId).ThenBy(r => r.Score))
+            {
+                List<Rating> ratingList;
+                if (ratingsMap.ContainsKey(rating.QuestionId))
+                {
+                    ratingList = (List<Rating>)ratingsMap[rating.QuestionId];
+                } else {
+                    ratingList = new List<Rating>();
+                    ratingsMap.Add(rating.QuestionId, ratingList);
+                }
+                ratingList.Add(rating);
+            }
+            return new JsonResult(ratingsMap);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Rating>> GetRating(int id)
         {

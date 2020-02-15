@@ -22,6 +22,12 @@ namespace RiseRestApi.Controllers
             return await _context.Note.ToListAsync();
         }
 
+        [HttpGet("person/{personId}")]
+        public async Task<ActionResult<IEnumerable<NoteDetail>>> GetNotesByPerson(int personId)
+        {
+            return await _context.NoteDetail.FromSqlRaw("EXEC spNoteDetailByPerson {0}", personId).ToListAsync();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Note>> GetNote(int id)
         {

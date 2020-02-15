@@ -18,22 +18,24 @@ namespace RiseRestApi.Repository
 
         public virtual DbSet<Address> Address { get; set; }
         public virtual DbSet<Assessment> Assessment { get; set; }
-        public virtual DbSet<AssessmentGrid> AssessmentGrid { get; set; }
+        public virtual DbSet<AssessmentDetail> AssessmentDetail { get; set; }
         public virtual DbSet<AssessmentResponse> AssessmentResponse { get; set; }
         public virtual DbSet<AssessmentResponseDetail> AssessmentResponseDetail { get; set; }
         public virtual DbSet<AreaAccess> AreaAccess { get; set; }
         public virtual DbSet<AreaAccessDetail> AreaAccessDetail { get; set; }
         public virtual DbSet<Note> Note { get; set; }
+        public virtual DbSet<NoteDetail> NoteDetail { get; set; }
+        public virtual DbSet<Organization> Organization { get; set; }
         public virtual DbSet<Person> Person { get; set; }
+        public virtual DbSet<PersonAssessmentDetail> PersonAssessmentDetail { get; set; }
         public virtual DbSet<PersonDetail> PersonDetail { get; set; }
         public virtual DbSet<PersonGrid> PersonGrid { get; set; }
-        public virtual DbSet<Question> Question { get; set; }
-        public virtual DbSet<Rating> Rating { get; set; }
-        public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<RiseProgram> Program { get; set; }
         public virtual DbSet<RiseProgramDetail> ProgramDetail { get; set; }
         public virtual DbSet<RiseProgramGrid> ProgramGrid { get; set; }
-        public virtual DbSet<Organization> Organization { get; set; }
+        public virtual DbSet<Question> Question { get; set; }
+        public virtual DbSet<Rating> Rating { get; set; }
+        public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<SkillSet> SkillSet { get; set; }
         public virtual DbSet<OrganizationDetail> OrganizationDetail { get; set; }
         public virtual DbSet<OrganizationGrid> OrganizationGrid { get; set; }
@@ -104,6 +106,8 @@ namespace RiseRestApi.Repository
                 */
             });
 
+            modelBuilder.Entity<NoteDetail>(entity => entity.HasNoKey());
+
             modelBuilder.Entity<SkillSet>(entity =>
             {
                 entity.Property(e => e.SkillSetName)
@@ -143,15 +147,9 @@ namespace RiseRestApi.Repository
 
         protected void OnModelCreatingAssessment(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<AssessmentGrid>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<AssessmentResponseDetail>(entity =>
-            {
-                entity.HasNoKey();
-            });
+            modelBuilder.Entity<AssessmentDetail>(entity => entity.HasNoKey());
+            modelBuilder.Entity<PersonAssessmentDetail>(entity => entity.HasNoKey());
+            modelBuilder.Entity<AssessmentResponseDetail>(entity => entity.HasNoKey());
 
             modelBuilder.Entity<Assessment>(entity =>
             {
@@ -226,34 +224,15 @@ namespace RiseRestApi.Repository
 
         protected void OnModelCreatingChart(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PersonAssessmentChart>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<CoachFirstLatestScoreChart>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<SkillSetPercentageChart>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
+            modelBuilder.Entity<PersonAssessmentChart>(entity => entity.HasNoKey());
+            modelBuilder.Entity<CoachFirstLatestScoreChart>(entity => entity.HasNoKey());
+            modelBuilder.Entity<SkillSetPercentageChart>(entity => entity.HasNoKey());
         }
 
         protected void OnModelCreatingPerson(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PersonDetail>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<PersonGrid>(entity =>
-            {
-                entity.HasNoKey();
-            });
+            modelBuilder.Entity<PersonDetail>(entity => entity.HasNoKey());
+            modelBuilder.Entity<PersonGrid>(entity => entity.HasNoKey());
 
             modelBuilder.Entity<Person>(entity =>
             {
@@ -301,15 +280,8 @@ namespace RiseRestApi.Repository
 
         protected void OnModelCreatingProgram(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<RiseProgramGrid>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<RiseProgramDetail>(entity =>
-            {
-                entity.HasNoKey();
-            });
+            modelBuilder.Entity<RiseProgramGrid>(entity => entity.HasNoKey());
+            modelBuilder.Entity<RiseProgramDetail>(entity => entity.HasNoKey());
 
             modelBuilder.Entity<RiseProgram>(entity =>
             {
@@ -328,15 +300,8 @@ namespace RiseRestApi.Repository
 
         protected void OnModelCreatingOrganization(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<OrganizationGrid>(entity =>
-            {
-                entity.HasNoKey();
-            });
-
-            modelBuilder.Entity<OrganizationDetail>(entity =>
-            {
-                entity.HasNoKey();
-            });
+            modelBuilder.Entity<OrganizationGrid>(entity => entity.HasNoKey());
+            modelBuilder.Entity<OrganizationDetail>(entity => entity.HasNoKey());
 
             modelBuilder.Entity<Organization>(entity =>
             {

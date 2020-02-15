@@ -55,11 +55,5 @@ namespace RiseRestApi.Controllers
         {
             return await _context.OrganizationGrid.FromSqlRaw("EXEC spOrganizationGrid").ToListAsync();
         }
-
-        [HttpGet("assessments/{personId}")]
-        public async Task<ActionResult<IEnumerable<AssessmentGrid>>> GetAssessmentByPerson(int personId)
-        {
-            return await _context.AssessmentGrid.FromSqlRaw("EXEC spAssessmentGrid {0},NULL", personId).ToListAsync();
-        }
     }
 }

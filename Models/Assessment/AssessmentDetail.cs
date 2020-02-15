@@ -2,7 +2,7 @@
 
 namespace RiseRestApi.Models
 {
-    public class AssessmentGrid : AssessmentBase
+    public class AssessmentDetail : AssessmentBase
     {
         public int AssessmentId { get; set; }
         public string VoiceName { get; set; }
