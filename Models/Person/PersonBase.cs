@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiseRestApi.Models
 {
@@ -22,5 +23,7 @@ namespace RiseRestApi.Models
         public decimal? OutsideInvestment { get; set; }
         public int? JobsCreated { get; set; }
         public bool IsRemoved { get; set; }
+        [NotMapped]
+        public string Token { get; set; }
     }
 }

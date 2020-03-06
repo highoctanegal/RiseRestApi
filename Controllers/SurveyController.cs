@@ -19,7 +19,7 @@ namespace RiseRestApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Survey>>> GetSurvey()
         {
-            return await _context.Survey.Where(s => !s.IsRemoved).ToListAsync();
+            return await _context.Survey.Where(s => !s.IsRemoved).OrderBy(s => s.SurveyName).ToListAsync();
         }
 
         [HttpGet("{id}")]

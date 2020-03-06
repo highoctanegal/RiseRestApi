@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 namespace RiseRestApi.Models
 {
-    public class AreaAccessDetail
+    public class AreaAuthorizationDetail
     {
         [Key]
-        public int AreaAccessId { get; set; }
+        public int AreaAuthorizationId { get; set; }
         public string AreaName { get; set; }
         public int? PersonId { get; set; }
         public int? ProgramId { get; set; }

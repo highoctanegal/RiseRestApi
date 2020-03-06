@@ -19,7 +19,7 @@ namespace RiseRestApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Organization>>> GetOrganization()
         {
-            return await _context.Organization.Where(o => !o.IsRemoved).ToListAsync();
+            return await _context.Organization.Where(o => !o.IsRemoved).OrderBy(o => o.OrganizationName).ToListAsync();
         }
 
         [HttpGet("{id}")]

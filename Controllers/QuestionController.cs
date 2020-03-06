@@ -22,6 +22,12 @@ namespace RiseRestApi.Controllers
             return await _context.Question.ToListAsync();
         }
 
+        [HttpGet("survey/{surveyId}")]
+        public async Task<ActionResult<IEnumerable<Question>>> GetQuestionBySurvey(int surveyId)
+        {
+            return await _context.SurveyQuestion.Where(q => q.SurveyId == surveyId && !q.Question.IsRemoved).Select(s => s.Question).ToListAsync();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Question>> GetQuestion(int id)
         {

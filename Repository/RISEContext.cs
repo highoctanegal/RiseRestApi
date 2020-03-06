@@ -21,8 +21,8 @@ namespace RiseRestApi.Repository
         public virtual DbSet<AssessmentDetail> AssessmentDetail { get; set; }
         public virtual DbSet<AssessmentResponse> AssessmentResponse { get; set; }
         public virtual DbSet<AssessmentResponseDetail> AssessmentResponseDetail { get; set; }
-        public virtual DbSet<AreaAccess> AreaAccess { get; set; }
-        public virtual DbSet<AreaAccessDetail> AreaAccessDetail { get; set; }
+        public virtual DbSet<AreaAuthorization> AreaAuthorization { get; set; }
+        public virtual DbSet<AreaAuthorizationDetail> AreaAuthorizationDetail { get; set; }
         public virtual DbSet<Note> Note { get; set; }
         public virtual DbSet<NoteDetail> NoteDetail { get; set; }
         public virtual DbSet<Organization> Organization { get; set; }
@@ -41,6 +41,7 @@ namespace RiseRestApi.Repository
         public virtual DbSet<OrganizationGrid> OrganizationGrid { get; set; }
         public virtual DbSet<Survey> Survey { get; set; }
         public virtual DbSet<SurveyQuestion> SurveyQuestion { get; set; }
+        public virtual DbSet<UsState> UsState { get; set; }
         public virtual DbSet<Voice> Voice { get; set; }
 
         public virtual DbSet<PersonAssessmentChart> PersonAssessmentChart { get; set; }
@@ -73,9 +74,9 @@ namespace RiseRestApi.Repository
 
             modelBuilder.Entity<Address>();
             
-            modelBuilder.Entity<AreaAccess>();
+            modelBuilder.Entity<AreaAuthorization>();
 
-            modelBuilder.Entity<AreaAccessDetail>();
+            modelBuilder.Entity<AreaAuthorizationDetail>();
 
             modelBuilder.Entity<Note>(entity =>
             {
@@ -115,6 +116,20 @@ namespace RiseRestApi.Repository
                     .HasMaxLength(50)
                     .IsUnicode(false);
             });
+
+            modelBuilder.Entity<UsState>(entity =>
+            {
+                entity.Property(e => e.UsStateName)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UsStateAbbrev)
+                    .IsRequired()
+                    .HasMaxLength(4)
+                    .IsUnicode(false);
+            });
+
 
             modelBuilder.Entity<Voice>(entity =>
             {

@@ -17,17 +17,17 @@ namespace RiseRestApi.Controllers
     {
         public PersonController(RiseContext context) : base(context) { }
 
-        [HttpGet("access/{id}")]
-        public async Task<ActionResult<IEnumerable<AreaAccessDetail>>> GetAuthorization(int id)
+        [HttpGet("authorization/{id}")]
+        public async Task<ActionResult<IEnumerable<AreaAuthorizationDetail>>> GetAuthorization(int id)
         {
             var person = _context.Person.Where(p => p.PersonId == id && !p.IsRemoved).FirstOrDefault();
-            
+
             if (person == null)
             {
                 return NotFound();
             }
 
-            return await _context.AreaAccessDetail.FromSqlRaw("EXEC dbo.spAreaAccessByPerson {0}", person.PersonId).ToListAsync();
+            return await _context.AreaAuthorizationDetail.FromSqlRaw("EXEC dbo.spAreaAuthorizationByPerson {0}", person.PersonId).ToListAsync();
         }
 
         [HttpGet]
@@ -47,13 +47,14 @@ namespace RiseRestApi.Controllers
             var coachRole = _context.Role.ToList().FirstOrDefault(r => r.RoleName.ToLower() == roleName.ToLower());
 
             return await _context.Person
-                .Where(p => p.RoleId == coachRole.RoleId).ToListAsync();
+                .Where(p => p.RoleId == coachRole.RoleId).OrderBy(p => p.LastName).ToListAsync();
         }
 
         [HttpGet("organization/{organizationId}")]
         public async Task<ActionResult<IEnumerable<Person>>> GetPersonByOrganization(int organizationId)
         {
-            return await _context.Person.Where(p => p.OrganizationId == organizationId).ToListAsync();
+            return await _context.Person.Where(p => p.OrganizationId == organizationId)
+                .OrderBy(p => p.LastName).ToListAsync();
         }
 
         [HttpGet("{id}")]
@@ -85,7 +86,41 @@ namespace RiseRestApi.Controllers
             }
             person.LastLogin = DateTime.UtcNow;
             _context.SaveChanges();
-            
+
+            var model = await _context.PersonDetail.FromSqlRaw("EXEC dbo.spPersonDetail {0}", person.PersonId)
+                .ToListAsync();
+            return model.First();
+        }
+
+        [HttpGet("login/{email}/{firstName}/{lastName}")]
+        public async Task<ActionResult<PersonDetail>> LoginNew(string email, string firstName, string lastName)
+        {
+            var person = _context.Person.FirstOrDefault(p => p.Email == email);
+            if (person != null)
+            {
+                if (person.IsRemoved)
+                {
+                    return NotFound();
+                }
+                person.LastLogin = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                var role = _context.Role.FirstOrDefault(r => r.RoleName == "Entrepreneur");
+                person = new Person
+                {
+                    Email = email,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    RoleId = role.RoleId,
+                    IsRemoved = false,
+                    LastLogin = DateTime.UtcNow
+                };
+                await _context.Person.AddAsync(person);
+                await _context.SaveChangesAsync();
+            }
+
             var model = await _context.PersonDetail.FromSqlRaw("EXEC dbo.spPersonDetail {0}", person.PersonId)
                 .ToListAsync();
             return model.First();

@@ -2,10 +2,10 @@
 
 namespace RiseRestApi.Models
 {
-    public class AreaAccess
+    public class AreaAuthorization
     {
         [Key]
-        public string AreaAccessId { get; set; }
+        public string AreaAuthorizationId { get; set; }
         public string RoleId { get; set; }
         public string AreaId { get; set; }
         public bool? PersonIdOnly { get; set; }

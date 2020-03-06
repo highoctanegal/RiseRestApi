@@ -23,7 +23,9 @@ namespace RiseRestApi.Models
         [NotMapped]
         public IEnumerable<int> NoteQuestionIdList { 
             get {
-                return (NoteQuestionIds ?? "").Split(',').Select(int.Parse);
+                return string.IsNullOrEmpty(NoteQuestionIds) 
+                    ? new List<int>() 
+                    : NoteQuestionIds.Split(',').Select(int.Parse);
             } 
         }
 

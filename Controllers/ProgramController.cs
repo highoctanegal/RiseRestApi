@@ -19,7 +19,7 @@ namespace RiseRestApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RiseProgram>>> GetProgram()
         {
-            return await _context.Program.Where(p => !p.IsRemoved).ToListAsync();
+            return await _context.Program.Where(p => !p.IsRemoved).OrderBy(p => p.ProgramName).ToListAsync();
         }
 
         [HttpGet("{id}")]

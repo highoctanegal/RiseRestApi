@@ -11,7 +11,7 @@ namespace RiseRestApi.Models
         public string FullName => $"{FirstName} {LastName}";
         public DateTime? NoteDate { get; set; }
         public string NoteText { get; set; }
-        public string NoteAuthorPersonId { get; set; }
+        public int? NoteAuthorPersonId { get; set; }
         public string NoteAuthorFirstName { get; set; }
         public string NoteAuthorLastName { get; set; }
         public string NoteAuthorFullName => $"{NoteAuthorFirstName} {NoteAuthorLastName}";

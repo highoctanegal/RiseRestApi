@@ -32,5 +32,11 @@ namespace RiseRestApi.Controllers
         {
             return await _context.Voice.Where(v => !v.IsRemoved).ToListAsync();
         }
+
+        [HttpGet("usstates")]
+        public async Task<ActionResult<IEnumerable<UsState>>> GetUsStates()
+        {
+            return await _context.UsState.ToListAsync();
+        }
     }
 }
