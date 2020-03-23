@@ -43,7 +43,7 @@ namespace RiseRestApi.Controllers
                 return NotFound();
             }
 
-            return model.First();
+            return model.FirstOrDefault();
         }
 
         [HttpPut("{id}")]

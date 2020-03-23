@@ -5,11 +5,9 @@ using System.Linq;
 
 namespace RiseRestApi.Models
 {
-    public class PersonAssessmentDetail
+    public class PersonAssessmentDetail : AssessmentBase
     {
         public int AssessmentId { get; set; }
-        public DateTime? AssessmentDate { get; set; }
-        public int VoiceId { get; set; }
         public int? OverallLevel { get; set; }
         public int? OverallScore { get; set; }
         public string VoiceName { get; set; }

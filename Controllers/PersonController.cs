@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiseRestApi.Models;
 using RiseRestApi.Repository;
+using RiseRestApi.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
-using System;
 
 namespace RiseRestApi.Controllers
 {
@@ -33,7 +34,7 @@ namespace RiseRestApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Person>>> GetPerson()
         {
-            return await _context.Person.Where(p => !p.IsRemoved).ToListAsync();
+            return await _context.Person.Where(p => !p.IsRemoved).OrderBy(o => o.LastName).ToListAsync();
         }
 
         [HttpGet("role/{roleName}")]
@@ -92,9 +93,15 @@ namespace RiseRestApi.Controllers
             return model.First();
         }
 
-        [HttpGet("login/{email}/{firstName}/{lastName}")]
-        public async Task<ActionResult<PersonDetail>> LoginNew(string email, string firstName, string lastName)
+        [HttpGet("login/{email}/{firstName}/{lastName}/{programCode}")]
+        public async Task<ActionResult<PersonDetail>> LoginNew(string email, string firstName, string lastName,
+            string programCode)
         {
+            RiseProgram program;
+            if ((program = GetProgramFromCode(programCode)) == null)
+            {
+                return NotFound();
+            }
             var person = _context.Person.FirstOrDefault(p => p.Email == email);
             if (person != null)
             {
@@ -107,22 +114,13 @@ namespace RiseRestApi.Controllers
             }
             else
             {
-                var role = _context.Role.FirstOrDefault(r => r.RoleName == "Entrepreneur");
-                person = new Person
-                {
-                    Email = email,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    RoleId = role.RoleId,
-                    IsRemoved = false,
-                    LastLogin = DateTime.UtcNow
-                };
-                await _context.Person.AddAsync(person);
-                await _context.SaveChangesAsync();
+                AddNewPerson(email, firstName, lastName, program);
             }
 
             var model = await _context.PersonDetail.FromSqlRaw("EXEC dbo.spPersonDetail {0}", person.PersonId)
                 .ToListAsync();
+            Emailer.SendEmailToAdmin(_context, programCode, program, model.First());
+
             return model.First();
         }
 
@@ -160,5 +158,46 @@ namespace RiseRestApi.Controllers
         {
             return await _context.Person.FindAsync(id) as Person;
         }
+
+        protected RiseProgram GetProgramFromCode(string programCode)
+        {
+            if (string.IsNullOrEmpty(programCode))
+            {
+                return null;
+            }
+            var codes = programCode.Split('-');
+            if (codes.Length < 2)
+            {
+                return null;
+            }
+            var organization = _context.Organization.FirstOrDefault(o => o.Code == codes[0]);
+            var program = _context.Program.FirstOrDefault(p => p.Code == codes[1]);
+            if (organization == null || program == null || program.OrganizationId != organization.OrganizationId)
+            {
+                return null;
+            }
+            return program;
+        }
+
+        protected async void AddNewPerson(string email, string firstName, string lastName,
+            RiseProgram program)
+        {
+            var role = _context.Role.FirstOrDefault(r => r.RoleName == "Entrepreneur");
+            var person = new Person
+            {
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName,
+                RoleId = role.RoleId,
+                ProgramId = program.ProgramId,
+                OrganizationId = program.OrganizationId,
+                IsRemoved = false,
+                LastLogin = DateTime.UtcNow
+            };
+            await _context.Person.AddAsync(person);
+            await _context.SaveChangesAsync();
+        }
+
+        
     }
 }

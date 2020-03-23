@@ -2,8 +2,9 @@
 {
     public class OrganizationBase
     {
-        public int AddressId { get; set; }
-        public int AdminPersonId { get; set; }
+        public string Code { get; set; }
+        public int? AddressId { get; set; }
+        public int? AdminPersonId { get; set; }
         public string OrganizationName { get; set; }
         public string BlobImageName { get; set; }
         public string MainPhone { get; set; }

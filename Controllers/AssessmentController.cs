@@ -56,7 +56,7 @@ namespace RiseRestApi.Controllers
         public async Task<ActionResult<PersonAssessmentDetail>> GetDraft(int personId, int voicePersonId)
         {
             var list = await _context.PersonAssessmentDetail
-                .FromSqlRaw("EXEC spPersonAssessmentDraft @PersonId={0}, @VoicePersonId={1}", personId, voicePersonId)
+                .FromSqlRaw("EXEC spPersonAssessmentDetail @PersonId={0}, @VoicePersonId={1}, @IsDraft={2}", personId, voicePersonId, 1)
                 .ToListAsync();
 
             return list.FirstOrDefault();
