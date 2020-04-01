@@ -29,19 +29,19 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSkillSet(int id, SkillSet skillSet)
+        public async Task<ActionResult<int>> PutSkillSet(int id, SkillSet skillSet)
         {
             return await Put(id, skillSet);
         }
 
         [HttpPost]
-        public async Task<ActionResult<SkillSet>> PostSkillSet(SkillSet skillSet)
+        public async Task<ActionResult<int>> PostSkillSet(SkillSet skillSet)
         {
             return await Post(skillSet);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<SkillSet>> DeleteSkillSet(int id)
+        public async Task<ActionResult<int>> DeleteSkillSet(int id)
         {
             return await Delete(id);
         }

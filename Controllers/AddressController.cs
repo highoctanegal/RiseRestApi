@@ -65,19 +65,19 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutAddress(int id, Address address)
+        public async Task<ActionResult<int>> PutAddress(int id, Address address)
         {
             return await Put(id, address);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Address>> PostAddress(Address address)
+        public async Task<ActionResult<int>> PostAddress(Address address)
         {
             return await Post(address);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Address>> DeleteAddress(int id)
+        public async Task<ActionResult<int>> DeleteAddress(int id)
         {
             var address = _context.Address.Where(a => a.AddressId == id).FirstOrDefault();
             if (address == null)

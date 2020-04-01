@@ -41,13 +41,13 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutNote(int id, Note note)
+        public async Task<ActionResult<int>> PutNote(int id, Note note)
         {
             return await Put(id, note);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Note>> PostNote(Note note)
+        public async Task<ActionResult<int>> PostNote(Note note)
         {
             return await Post(note);
         }
@@ -143,7 +143,7 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Note>> DeleteNote(int id)
+        public async Task<ActionResult<int>> DeleteNote(int id)
         {
             var assessment = _context.Assessment.FirstOrDefault(a => a.NoteId == id);
             if (assessment == null)

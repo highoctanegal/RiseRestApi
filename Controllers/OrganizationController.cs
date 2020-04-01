@@ -47,19 +47,19 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutOrganization(int id, Organization person)
+        public async Task<ActionResult<int>> PutOrganization(int id, Organization person)
         {
             return await Put(id, person);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Organization>> PostOrganization(Organization person)
+        public async Task<ActionResult<int>> PostOrganization(Organization person)
         {
             return await Post(person);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Organization>> DeleteOrganization(int id)
+        public async Task<ActionResult<int>> DeleteOrganization(int id)
         {
             var organization = _context.Organization.Where(o => o.OrganizationId == id).FirstOrDefault();
             if (organization == null)

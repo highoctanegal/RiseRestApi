@@ -1,11 +1,14 @@
-﻿using System;
+﻿using RiseRestApi.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace RiseRestApi.Repository
 {
-    interface IAssessmentRepository
+    public interface IAssessmentRepository : IRiseRepository<Assessment>
     {
+        public Task<AssessmentDetail> GetDetail(int id);
+        public Task<List<AssessmentDetail>> GetByPerson(int personId);
+        public Task<PersonAssessmentDetail> GetDraft(int personId, int voicePersonId);
+        public Task<List<PersonAssessmentDetail>> GetDetailByPerson(int personId);
     }
 }

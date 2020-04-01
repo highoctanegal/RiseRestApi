@@ -35,19 +35,19 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestion(int id, Question question)
+        public async Task<ActionResult<int>> PutQuestion(int id, Question question)
         {
             return await Put(id, question);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Question>> PostQuestion(Question question)
+        public async Task<ActionResult<int>> PostQuestion(Question question)
         {
             return await Post(question);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Question>> DeleteQuestion(int id)
+        public async Task<ActionResult<int>> DeleteQuestion(int id)
         {
             return await Delete(id);
         }

@@ -44,19 +44,19 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSurvey(int id, Survey survey)
+        public async Task<ActionResult<int>> PutSurvey(int id, Survey survey)
         {
             return await Put(id, survey);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Survey>> PostSurvey(Survey survey)
+        public async Task<ActionResult<int>> PostSurvey(Survey survey)
         {
             return await Post(survey);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Survey>> DeleteSurvey(int id)
+        public async Task<ActionResult<int>> DeleteSurvey(int id)
         {
             var survey = _context.Survey.Where(s => s.SurveyId == id).FirstOrDefault();
             if (survey == null)

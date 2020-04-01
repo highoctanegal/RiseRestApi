@@ -47,19 +47,19 @@ namespace RiseRestApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProgram(int id, RiseProgram program)
+        public async Task<ActionResult<int>> PutProgram(int id, RiseProgram program)
         {
             return await Put(id, program);
         }
 
         [HttpPost]
-        public async Task<ActionResult<RiseProgram>> PostProgram(RiseProgram program)
+        public async Task<ActionResult<int>> PostProgram(RiseProgram program)
         {
             return await Post(program);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<RiseProgram>> DeleteProgram(int id)
+        public async Task<ActionResult<int>> DeleteProgram(int id)
         {
             var program = _context.Program.Where(p => p.ProgramId == id).FirstOrDefault();
             if (program == null)

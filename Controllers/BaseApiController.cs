@@ -28,13 +28,13 @@ namespace RiseRestApi.Controllers
             return new JsonResult(model);
         }
 
-        protected async Task<IActionResult> Put(int id, U model)
+        protected async Task<ActionResult<int>> Put(int id, U model)
         {
             _context.Entry(model).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                return await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -47,19 +47,16 @@ namespace RiseRestApi.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
         }
 
-        protected async Task<ActionResult<U>> Post(U model)
+        protected async Task<ActionResult<int>> Post(U model)
         {
             _context.Add(model);
             await _context.SaveChangesAsync();
-
-            return new JsonResult(model);
+            return model.Id;
         }
 
-        protected async Task<ActionResult<U>> Delete(int id)
+        protected async Task<ActionResult<int>> Delete(int id)
         {
             var model = await FindAsync(id);
 
@@ -69,9 +66,7 @@ namespace RiseRestApi.Controllers
             }
 
             _context.Remove(model);
-            await _context.SaveChangesAsync();
-
-            return new JsonResult(model);
+            return await _context.SaveChangesAsync();
         }
 
         protected abstract bool Exists(int id);

@@ -77,13 +77,21 @@ namespace RiseRestApi.Controllers
             return model.First();
         }
 
+        [HttpGet("checkemail/{email}")]
+        public async Task<ActionResult<bool>> CheckEmail(string email)
+        {
+            return await _context.Person.AnyAsync(p => p.Email == email);
+        }
+
         [HttpGet("login/{email}")]
         public async Task<ActionResult<PersonDetail>> Login(string email)
         {
             var person = _context.Person.Where(p => p.Email == email && !p.IsRemoved).FirstOrDefault();
             if (person == null)
             {
-                return NotFound();
+                var emailer = new Emailer();
+                await emailer.SendEmailToAdminUnauthorizedLogin(email);
+                return Unauthorized();
             }
             person.LastLogin = DateTime.UtcNow;
             _context.SaveChanges();
@@ -100,14 +108,14 @@ namespace RiseRestApi.Controllers
             RiseProgram program;
             if ((program = GetProgramFromCode(programCode)) == null)
             {
-                return NotFound();
+                return Unauthorized();
             }
             var person = _context.Person.FirstOrDefault(p => p.Email == email);
             if (person != null)
             {
                 if (person.IsRemoved)
                 {
-                    return NotFound();
+                    return Unauthorized();
                 }
                 person.LastLogin = DateTime.UtcNow;
                 await _context.SaveChangesAsync();
@@ -119,25 +127,26 @@ namespace RiseRestApi.Controllers
 
             var model = await _context.PersonDetail.FromSqlRaw("EXEC dbo.spPersonDetail {0}", person.PersonId)
                 .ToListAsync();
-            Emailer.SendEmailToAdmin(_context, programCode, program, model.First());
+            var emailer = new Emailer();
+            await emailer.SendEmailToAdminNewUser(programCode, program, model.First());
 
             return model.First();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPerson(int id, Person person)
+        public async Task<ActionResult<int>> PutPerson(int id, Person person)
         {
             return await Put(id, person);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Person>> PostPerson(Person person)
+        public async Task<ActionResult<int>> PostPerson(Person person)
         {
             return await Post(person);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Person>> DeletePerson(int id)
+        public async Task<ActionResult<int>> DeletePerson(int id)
         {
             var person = _context.Person.Where(p => p.PersonId == id).FirstOrDefault();
             if (person == null)
